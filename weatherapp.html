@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to bottom, #FFD700, #87CEEB);
+            transition: background 0.5s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: black;
+            color: white;
+            border: none;
+            transition: transform 0.5s ease-in-out;
+        }
+        button:active {
+            transform: scale(1.1);
+        }
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+        h3 {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button id="startButton">Check the weather</button>
+        <button id="currentLocationButton">Use Current Location</button>
+        <div id="municipalityButtons" style="display: none;"></div>
+        <div id="cityButtons" style="display: none;"></div>
+        <div id="suburbButtons" style="display: none;"></div>
+        <div id="weatherOptions" style="display: none;"></div>
+        <div id="weatherResult"></div>
+    </div>
+
+    <script>
+        const weatherApiKey = "13f60281a6384a60869193822251502"; // Your WeatherAPI key
+        const openCageApiKey = "2e2e445f11734267ac80f8b4d27b2560"; // Your OpenCage API key
+
+        document.getElementById('startButton').addEventListener('click', function() {
+            this.style.display = 'none';
+            document.getElementById('currentLocationButton').style.display = 'none';
+            showMunicipalities();
+        });
+
+        document.getElementById('currentLocationButton').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(success, error);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        });
+
+        function success(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            getWeatherByCoords(latitude, longitude, "Current");
+        }
+
+        function error() {
+            alert("Unable to retrieve your location.");
+        }
+
+        const municipalities = {
+            "City of Johannesburg": {
+                cities: {
+                    "Sandton": ["Bryanston", "Rivonia", "Morningside", "Woodmead", "Sunninghill"],
+                    "Johannesburg": ["Rosebank", "Melville", "Parktown", "Soweto", "Newtown"]
+                }
+            },
+            "City of Tshwane": {
+                cities: {
+                    "Pretoria": ["Centurion", "Menlyn", "Hatfield", "Brooklyn", "Montana"]
+                }
+            },
+            "Ekurhuleni": {
+                cities: {
+                    "Benoni": ["Farrarmere", "Northmead", "Rynfield", "Brentwood Park", "Crystal Park"],
+                    "Kempton Park": ["Glen Marais", "Norkem Park", "Birch Acres", "Terenure", "Edleen"]
+                }
+            }
+        };
+
+        function showMunicipalities() {
+            let municipalityDiv = document.getElementById('municipalityButtons');
+            municipalityDiv.innerHTML = '<h3>Municipalities</h3>';
+            for (let municipality in municipalities) {
+                let btn = document.createElement('button');
+                btn.textContent = municipality;
+                btn.onclick = function() { showCities(municipality); };
+                municipalityDiv.appendChild(btn);
+            }
+            municipalityDiv.style.display = 'block';
+        }
+
+        function showCities(municipality) {
+            document.getElementById('municipalityButtons').style.display = 'none';
+            let cityDiv = document.getElementById('cityButtons');
+            cityDiv.innerHTML = '<h3>Cities</h3>';
+            for (let city in municipalities[municipality].cities) {
+                let btn = document.createElement('button');
+                btn.textContent = city;
+                btn.onclick = function() { showSuburbs(municipality, city); };
+                cityDiv.appendChild(btn);
+            }
+            cityDiv.style.display = 'block';
+        }
+
+        function showSuburbs(municipality, city) {
+            document.getElementById('cityButtons').style.display = 'none';
+            let suburbDiv = document.getElementById('suburbButtons');
+            suburbDiv.innerHTML = '<h3>Suburbs</h3>';
+            municipalities[municipality].cities[city].forEach(suburb => {
+                let btn = document.createElement('button');
+                btn.textContent = suburb;
+                btn.onclick = function() { getCoordinatesAndWeather(suburb + ", " + city + ", Gauteng"); };
+                suburbDiv.appendChild(btn);
+            });
+            suburbDiv.style.display = 'block';
+        }
+
+        function getCoordinatesAndWeather(location) {
+            document.getElementById('suburbButtons').style.display = 'none';
+            document.getElementById('weatherResult').innerHTML = `<p>Fetching coordinates for ${location}...</p>`;
+
+            // Call OpenCage Geocoder API
+            fetch(`https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=${openCageApiKey}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.results.length > 0) {
+                        const lat = data.results[0].geometry.lat;
+                        const lng = data.results[0].geometry.lng;
+                        getWeatherByCoords(lat, lng, "Current");
+                    } else {
+                        document.getElementById('weatherResult').innerHTML = `<p>Location not found.</p>`;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('weatherResult').innerHTML = `<p>Error fetching coordinates: ${error.message}</p>`;
+                });
+        }
+
+        function getWeatherByCoords(lat, lng, type) {
+            document.getElementById('weatherResult').innerHTML = `<p>Loading ${type} weather...</p>`;
+            let endpoint = type === "Next Week" ? "forecast.json?days=7" : "current.json";
+
+            fetch(`https://api.weatherapi.com/v1/${endpoint}?key=${weatherApiKey}&q=${lat},${lng}&aqi=no`)
+                .then(response => response.json())
+                .then(data => {
+                    let temp = data.current ? data.current.temp_c + '°C' : 'N/A';
+                    let condition = data.current ? data.current.condition.text : 'N/A';
+                    let emoji = condition.includes("Rain") ? "🌧️" : condition.includes("Cloud") ? "☁️" : condition.includes("Snow") ? "❄️" : "☀️";
+                    let date = new Date(data.location.localtime);
+                    let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    let formattedDate = date.toLocaleDateString('en-US', options);
+
+                    document.getElementById('weatherResult').innerHTML = `<h2>Weather for Your Location</h2>
+                        <p><strong>Date:</strong> ${formattedDate}</p>
+                        <p><strong>Temperature:</strong> ${temp}</p>
+                        <p><strong>Condition:</strong> ${condition} ${emoji}</p>`;
+                })
+                .catch(error => {
+                    document.getElementById('weatherResult').innerHTML = `<p>Error fetching weather data: ${error.message}</p>`;
+                });
+        }
+    </script>
+</body>
+</html>
