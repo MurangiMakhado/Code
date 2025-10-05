@@ -1,0 +1,2974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Burial Society Management</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --primary: #2c3e50;
+    --secondary: #3498db;
+    --accent: #e74c3c;
+    --success: #27ae60;
+    --warning: #f39c12;
+    --light: #ecf0f1;
+    --dark: #2c3e50;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --nav-bg: #ffffff;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.12);
+    --transition: all 0.3s ease;
+  }
+
+  body.dark {
+    --primary: #2c3e50;
+    --secondary: #3498db;
+    --accent: #e74c3c;
+    --success: #27ae60;
+    --warning: #f39c12;
+    --light: #34495e;
+    --dark: #ecf0f1;
+    --text: #ecf0f1;
+    --text-light: #bdc3c7;
+    --bg: #1a1f29;
+    --card-bg: #2c3e50;
+    --nav-bg: #2c3e50;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    --shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.25);
+  }
+
+  * { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+  }
+  
+  body { 
+    background: var(--bg); 
+    color: var(--text); 
+    transition: var(--transition);
+    line-height: 1.6;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  /* Layout */
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* Navigation */
+  nav { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    background: var(--nav-bg); 
+    padding: 0.8rem 2rem; 
+    box-shadow: var(--shadow);
+    position: sticky; 
+    top: 0; 
+    z-index: 100;
+    transition: var(--transition);
+  }
+  
+  .logo-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  
+  .logo {
+    height: 60px;
+    width: auto;
+    transition: var(--transition);
+    border-radius: 8px;
+    background: transparent;
+    display: block;
+  }
+  
+  .logo.expanded {
+    height: 120px;
+  }
+  
+  nav ul { 
+    list-style: none; 
+    display: flex; 
+    gap: 1.5rem; 
+  }
+  
+  nav ul li a { 
+    text-decoration: none; 
+    color: var(--text); 
+    font-weight: 500; 
+    transition: var(--transition);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  nav ul li a:hover { 
+    color: var(--secondary);
+    background: rgba(52, 152, 219, 0.1);
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .theme-toggle { 
+    background: var(--secondary); 
+    border: none; 
+    border-radius: 50%; 
+    width: 42px; 
+    height: 42px; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer; 
+    color: white; 
+    font-size: 1.2rem; 
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+  }
+  
+  .theme-toggle:hover { 
+    background: var(--primary); 
+    transform: rotate(15deg);
+  }
+
+  /* Hero Section */
+  .hero { 
+    text-align: center; 
+    padding: 5rem 2rem; 
+    background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+    color: white; 
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.1' d='M0,224L48,213.3C96,203,192,181,288,160C384,139,480,117,576,122.7C672,128,768,160,864,170.7C960,181,1056,171,1152,165.3C1248,160,1344,160,1392,160L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .hero h2 { 
+    font-size: 2.8rem; 
+    margin-bottom: 1rem; 
+    font-weight: 800;
+  }
+  
+  .hero p { 
+    font-size: 1.2rem; 
+    opacity: 0.9; 
+    margin-bottom: 2rem;
+  }
+
+  /* Cards Grid */
+  .container { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    gap: 2rem; 
+    padding: 3rem 2rem; 
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .card { 
+    background: var(--card-bg); 
+    padding: 2rem; 
+    border-radius: 16px; 
+    box-shadow: var(--shadow);
+    transition: var(--transition); 
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-left: 4px solid var(--secondary);
+  }
+  
+  .card:hover { 
+    transform: translateY(-8px); 
+    box-shadow: var(--shadow-hover);
+    border-left: 4px solid var(--accent);
+  }
+  
+  .card h3 { 
+    color: var(--secondary); 
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  
+  .card p { 
+    color: var(--text-light);
+    line-height: 1.6;
+  }
+
+  .card-icon {
+    background: var(--secondary);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.2rem;
+    font-size: 1.2rem;
+  }
+
+  /* Content Sections */
+  .content { 
+    padding: 2.5rem; 
+    display: none; 
+    animation: fadeIn 0.4s ease; 
+    transition: var(--transition);
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  
+  .content.active { 
+    display: block; 
+  }
+  
+  @keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(20px); } 
+    to { opacity: 1; transform: translateY(0); } 
+  }
+
+  .section-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dark .section-header {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .section-header h2 {
+    font-size: 2rem;
+    color: var(--secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .export-buttons {
+    display: flex;
+    gap: 0.8rem;
+  }
+
+  /* Forms */
+  .form-search-container { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 1.5rem; 
+    margin-top: 1.5rem; 
+    align-items: flex-start; 
+  }
+  
+  #memberForm { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 1rem; 
+    flex: 1 1 600px; 
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+  }
+  
+  #memberForm input, 
+  #memberSearch, 
+  #memberForm select {
+    flex: 1 1 180px;
+    min-width: 120px;
+    max-width: 300px;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: var(--transition);
+    background: var(--card-bg);
+    color: var(--text);
+  }
+
+  #memberForm input:focus,
+  #memberSearch:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  }
+  
+  #memberForm button {
+    flex: 0 0 auto;
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Payment Form */
+  #paymentForm {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+
+  #paymentForm input,
+  #paymentForm select {
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: var(--transition);
+    background: var(--card-bg);
+    color: var(--text);
+  }
+
+  #paymentForm input:focus,
+  #paymentForm select:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  }
+
+  /* Buttons */
+  .add-btn-green { 
+    background: var(--success); 
+    color: #fff; 
+  }
+  
+  .add-btn-green:hover {
+    background: #219653;
+    transform: translateY(-2px);
+  }
+
+  .update-btn-blue { 
+    background: var(--secondary); 
+    color: #fff; 
+  }
+
+  .update-btn-blue:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+  }
+
+  .export-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+  }
+
+  .export-btn:hover {
+    background: #1e2a38;
+    transform: translateY(-2px);
+  }
+
+  #memberSearch {
+    flex: 1;
+    max-width: 400px;
+    min-width: 200px;
+  }
+
+  /* Tables */
+  table { 
+    width: 100%; 
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 2rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  
+  table th, table td { 
+    padding: 1rem; 
+    text-align: left; 
+    vertical-align: middle; 
+  }
+  
+  table th { 
+    background: var(--secondary);
+    color: white;
+    font-weight: 600;
+    padding: 1.2rem 1rem;
+  }
+
+  table tr:nth-child(even) {
+    background: rgba(0,0,0,0.02);
+  }
+
+  .dark table tr:nth-child(even) {
+    background: rgba(255,255,255,0.05);
+  }
+
+  table tr:hover {
+    background: rgba(52, 152, 219, 0.1);
+  }
+  
+  /* Total Payment Column Styling - SPECIFIC to payment table */
+  #payments table th:last-child,
+  #payments table td:last-child {
+    text-align: center;
+    color: var(--success);
+    font-weight: bold;
+  }
+  
+  /* Date column styling - ensure dates stay on one line */
+  #payments table td:nth-child(4) {
+    white-space: nowrap;
+    min-width: 120px;
+  }
+  
+  /* UPDATED: Action buttons with specific colors */
+  button.edit-btn { 
+    background: var(--warning); 
+    color: white; 
+    border: none; 
+    padding: 0.5rem 1rem; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    margin-right: 0.5rem;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  button.edit-btn:hover {
+    background: #e67e22;
+    transform: translateY(-2px);
+  }
+  
+  button.delete-btn { 
+    background: var(--accent); 
+    color: white; 
+    border: none; 
+    padding: 0.5rem 1rem; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    margin-right: 0.5rem;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  button.delete-btn:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+  }
+  
+  button.beneficiary-btn { 
+    background: var(--success); 
+    color: white; 
+    border: none; 
+    padding: 0.5rem 1rem; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    margin-right: 0.5rem;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  button.beneficiary-btn:hover {
+    background: #219653;
+    transform: translateY(-2px);
+  }
+  
+  /* FIXED: Payment table action buttons - yellow edit, red delete, white text in actions column */
+  #payments table th:last-child {
+    background: var(--secondary) !important;
+    color: white !important; /* WHITE TEXT */
+  }
+
+  #payments table .edit-btn {
+    background: var(--warning) !important; /* YELLOW */
+    color: white !important;
+  }
+
+  #payments table .delete-btn {
+    background: var(--accent) !important; /* RED */
+    color: white !important;
+  }
+
+  #payments table .edit-btn:hover {
+    background: #e67e22 !important; /* Darker yellow on hover */
+  }
+
+  #payments table .delete-btn:hover {
+    background: #c0392b !important; /* Darker red on hover */
+  }
+  
+  .beneficiaries-list { 
+    font-size: 0.95rem; 
+  }
+  
+  .beneficiary-id {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin-top: 4px;
+  }
+  
+  .small-muted { 
+    font-size: 0.9rem; 
+    color: var(--text-light); 
+    margin-top: 0.5rem; 
+  }
+
+  /* Payment status indicators */
+  .payment-status {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  
+  .status-paid {
+    background-color: rgba(39, 174, 96, 0.15);
+    color: #27ae60;
+  }
+  
+  .status-pending {
+    background-color: rgba(243, 156, 18, 0.15);
+    color: #f39c12;
+  }
+  
+  .status-overdue {
+    background-color: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+  }
+
+  /* Summary cards */
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .summary-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  
+  .summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+  }
+  
+  .summary-card h3 {
+    font-size: 1rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+  }
+  
+  .summary-card .amount {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--secondary);
+  }
+  
+  /* Updated: Move Total Collected to right and make it green */
+  .summary-card.total {
+    text-align: right;
+    padding-right: 2rem;
+  }
+  
+  .summary-card.total .amount {
+    color: var(--success);
+    font-weight: bold;
+  }
+
+  /* Expandable sections */
+  .expandable-section {
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    background: var(--card-bg);
+  }
+  
+  .expandable-header {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: var(--transition);
+    user-select: none;
+  }
+  
+  .expandable-header:hover {
+    background: rgba(52, 152, 219, 0.05);
+  }
+  
+  .expandable-header h3 {
+    color: var(--secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 0;
+  }
+  
+  .expandable-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+    background: var(--card-bg);
+  }
+  
+  .expandable-content.expanded {
+    max-height: 5000px;
+  }
+  
+  .expandable-content-inner {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(0,0,0,0.1);
+  }
+  
+  .dark .expandable-content-inner {
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .expandable-header .expand-icon {
+    transition: transform 0.3s ease;
+  }
+
+  .expandable-header.expanded .expand-icon {
+    transform: rotate(180deg);
+  }
+
+  /* Reports Action Buttons - FIXED: Made BIG like home buttons */
+  .reports-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* BIG like home */
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  
+  .report-card {
+    background: var(--card-bg);
+    padding: 2.5rem; /* BIG padding like home */
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-left: 6px solid var(--secondary); /* THICK border */
+    text-align: left;
+    height: 100%;
+    min-height: 220px; /* SAME HEIGHT as home cards */
+  }
+  
+  .report-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+    border-left: 6px solid var(--accent);
+  }
+  
+  .report-card h3 {
+    color: var(--secondary);
+    margin-bottom: 1.2rem;
+    font-size: 1.6rem; /* BIG text */
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  
+  .report-card p {
+    color: var(--text-light);
+    line-height: 1.7;
+    flex-grow: 1;
+    font-size: 1.1rem; /* Slightly larger text */
+  }
+  
+  .report-icon {
+    background: var(--secondary);
+    color: white;
+    width: 60px; /* LARGER icons */
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.2rem;
+    font-size: 1.4rem;
+  }
+  
+  .report-card.warning {
+    border-left: 6px solid var(--warning);
+  }
+  
+  .report-card.warning .report-icon {
+    background: var(--warning);
+  }
+  
+  .report-card.danger {
+    border-left: 6px solid var(--accent);
+  }
+  
+  .report-card.danger .report-icon {
+    background: var(--accent);
+  }
+  
+  .report-card.success {
+    border-left: 6px solid var(--success);
+  }
+  
+  .report-card.success .report-icon {
+    background: var(--success);
+  }
+
+  /* Quick Action Buttons */
+  .quick-actions {
+    display: flex;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+  }
+  
+  .quick-action-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .quick-action-btn:hover {
+    background: #1e2a38;
+    transform: translateY(-2px);
+  }
+  
+  .quick-action-btn.warning {
+    background: var(--warning);
+  }
+  
+  .quick-action-btn.warning:hover {
+    background: #e67e22;
+  }
+  
+  .quick-action-btn.success {
+    background: var(--success);
+  }
+  
+  .quick-action-btn.success:hover {
+    background: #219653;
+  }
+
+  /* Flagged members styling */
+  .flagged-member {
+    background: rgba(231, 76, 60, 0.1) !important;
+    border-left: 4px solid var(--accent) !important;
+  }
+  
+  .flagged-member td:first-child {
+    font-weight: bold;
+    color: var(--accent);
+  }
+
+  /* Status badges */
+  .status-badge {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-left: 0.5rem;
+  }
+  
+  .status-flagged {
+    background-color: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+  }
+
+  /* Reports Tabs */
+  .tabs {
+    display: flex;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .dark .tabs {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .tab {
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: var(--transition);
+    border-bottom: 3px solid transparent;
+  }
+
+  .tab.active {
+    color: var(--secondary);
+    border-bottom: 3px solid var(--secondary);
+  }
+
+  .tab:hover:not(.active) {
+    background: rgba(52, 152, 219, 0.1);
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  /* Statement Actions */
+  .statement-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  /* Email Form */
+  .email-form {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+
+  .email-form h4 {
+    margin-bottom: 1rem;
+    color: var(--secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .email-form .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .email-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .email-form input,
+  .email-form textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: var(--transition);
+    background: var(--card-bg);
+    color: var(--text);
+  }
+
+  .email-form input:focus,
+  .email-form textarea:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  }
+
+  .email-form textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  /* Modals */
+  .modal {
+    display: none;
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    justify-content: center; 
+    align-items: center; 
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .modal-content {
+    background: var(--card-bg); 
+    color: var(--text); 
+    padding: 2rem; 
+    border-radius: 16px; 
+    width: 90%;
+    max-width: 600px;
+    text-align: center; 
+    box-shadow: var(--shadow-hover);
+    animation: slideUp 0.4s ease;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .modal-buttons { 
+    margin-top: 1.5rem; 
+    display: flex; 
+    gap: 0.8rem; 
+    justify-content: center; 
+  }
+  
+  .btn { 
+    padding: 0.8rem 1.5rem; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-weight: 600; 
+    border: none;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .btn-ghost { 
+    background: transparent; 
+    border: 1px solid #ddd; 
+    color: var(--text); 
+  }
+  
+  .btn-ghost:hover {
+    background: rgba(0,0,0,0.05);
+  }
+  
+  .btn-primary { 
+    background: var(--secondary); 
+    color: white; 
+  }
+
+  .btn-primary:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+  }
+  
+  .btn-green { 
+    background: var(--success); 
+    color: white; 
+  }
+
+  .btn-green:hover {
+    background: #219653;
+    transform: translateY(-2px);
+  }
+
+  .btn-orange {
+    background: var(--warning);
+    color: white;
+  }
+
+  .btn-orange:hover {
+    background: #e67e22;
+    transform: translateY(-2px);
+  }
+
+  .btn-red {
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-red:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+  }
+
+  /* Footer */
+  footer {
+    background: var(--nav-bg);
+    color: var(--text);
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: auto;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+  }
+
+  /* Back Button */
+  .back-button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .back-button:hover {
+    background: #1e2a38;
+    transform: translateY(-2px);
+  }
+
+  /* Reports Content Sections */
+  .report-content { 
+    padding: 2.5rem; 
+    display: none; 
+    animation: fadeIn 0.4s ease; 
+    transition: var(--transition);
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  
+  .report-content.active { 
+    display: block; 
+  }
+  
+  /* Report Header */
+  .report-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dark .report-header {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .report-header h2 {
+    font-size: 2rem;
+    color: var(--secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  /* Report Actions */
+  .report-actions {
+    display: flex;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+  }
+
+  /* Report Cards Grid */
+  .reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem 0;
+  }
+
+  /* Report card arrow */
+  .report-card-arrow {
+    margin-top: 1rem;
+    color: var(--text-light);
+    font-size: 1.2rem;
+    transition: var(--transition);
+  }
+
+  .report-card:hover .report-card-arrow {
+    transform: translateX(5px);
+    color: var(--secondary);
+  }
+
+  /* Hide tabs in reports since we're using dedicated views now */
+  #reports .tabs {
+    display: none;
+  }
+
+  /* Make sure report contents are properly hidden */
+  #reports .tab-content {
+    display: none !important;
+  }
+
+  /* Custom dropdown styling */
+  .custom-select {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .custom-select select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 2.5rem;
+  }
+
+  .custom-select::after {
+    content: '\f078';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--text-light);
+  }
+
+  /* Yearly Progress Section */
+  .yearly-progress-section {
+    margin: 3rem 0;
+    padding: 2rem;
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    display: none;
+  }
+
+  .yearly-progress-section.active {
+    display: block;
+  }
+
+  .yearly-progress-section h3 {
+    color: var(--secondary);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .progress-container {
+    margin-bottom: 2rem;
+  }
+
+  .progress-bar {
+    height: 25px;
+    background-color: #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+    position: relative;
+  }
+
+  .dark .progress-bar {
+    background-color: #34495e;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--success), #2ecc71);
+    border-radius: 12px;
+    transition: width 0.5s ease;
+    position: relative;
+  }
+
+  .progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-light);
+  }
+
+  .progress-percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  }
+
+  .yearly-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .yearly-stat {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+
+  .yearly-stat h4 {
+    font-size: 1rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+  }
+
+  .yearly-stat .amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--secondary);
+  }
+
+  /* Fix action buttons alignment */
+  #members table td:last-child {
+    white-space: nowrap;
+  }
+
+  #members table td:last-child .beneficiary-btn,
+  #members table td:last-child .edit-btn,
+  #members table td:last-child .delete-btn {
+    margin: 2px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  /* Ensure buttons stay on one line */
+  #members table tr td:last-child {
+    min-width: 280px;
+  }
+
+  /* Toast notifications */
+  .toast {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    background: var(--success);
+    color: white;
+    border-radius: 8px;
+    box-shadow: var(--shadow-hover);
+    z-index: 10000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .toast.show {
+    transform: translateX(0);
+  }
+
+  .toast.error {
+    background: var(--accent);
+  }
+
+  .toast.warning {
+    background: var(--warning);
+  }
+
+  /* Responsive */
+  @media (max-width: 980px){
+    .container {
+      grid-template-columns: 1fr;
+      padding: 2rem 1rem;
+    }
+    
+    nav {
+      flex-direction: column;
+      padding: 1rem;
+      gap: 1rem;
+    }
+    
+    nav ul {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .form-search-container {
+      flex-direction: column;
+    }
+    
+    #memberForm {
+      flex: 1;
+    }
+    
+    #memberSearch {
+      max-width: 100%;
+    }
+    
+    .hero h2 {
+      font-size: 2.2rem;
+    }
+    
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    
+    .export-buttons {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .statement-actions {
+      flex-direction: column;
+    }
+
+    .reports-actions {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .content {
+      padding: 1.5rem;
+    }
+    
+    .modal-content {
+      width: 95%;
+      padding: 1.5rem;
+    }
+    
+    .modal-buttons {
+      flex-direction: column;
+    }
+    
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .export-buttons {
+      flex-direction: column;
+    }
+    
+    /* Adjust summary cards for mobile */
+    .summary-cards {
+      grid-template-columns: 1fr;
+    }
+    
+    .summary-card.total {
+      text-align: center;
+      padding-right: 1.5rem;
+    }
+    
+    /* Make table scrollable on mobile */
+    .content table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    
+    /* Ensure dates stay on one line on mobile */
+    #payments table td:nth-child(4) {
+      white-space: nowrap;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="app-container">
+  <nav>
+    <div class="logo-container" id="logoContainer">
+      <img src="file_0000000038d461f8aa257e1fadde4cda.jpeg" alt="TSHILAPFENE BURIAL SOCIETY Logo" class="logo" id="logo">
+    </div>
+    <ul>
+      <li><a href="#" data-section="home"><i class="fas fa-home"></i> Home</a></li>
+      <li><a href="#" data-section="members"><i class="fas fa-users"></i> Members</a></li>
+      <li><a href="#" data-section="payments"><i class="fas fa-money-bill-wave"></i> Payments</a></li>
+      <li><a href="#" data-section="reports"><i class="fas fa-chart-bar"></i> Reports</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+    </div>
+  </nav>
+
+  <section class="hero" id="homeSection">
+    <div class="hero-content">
+      <h2>Dignified Support in Times of Need</h2>
+      <p>Comprehensive management for members, payments, and beneficiaries</p>
+    </div>
+  </section>
+
+  <div class="container" id="homeCards">
+    <div class="card" data-section="members">
+      <div class="card-icon"><i class="fas fa-user-friends"></i></div>
+      <h3>Member Management</h3>
+      <p>Register members, upload IDs, and manage profiles with our intuitive system.</p>
+    </div>
+    <div class="card" data-section="payments">
+      <div class="card-icon"><i class="fas fa-credit-card"></i></div>
+      <h3>Payment Tracking</h3>
+      <p>Track fees, contributions, and allocate payments with detailed reporting.</p>
+    </div>
+    <div class="card" data-section="reports">
+      <div class="card-icon"><i class="fas fa-chart-pie"></i></div>
+      <h3>Reporting</h3>
+      <p>Generate detailed financial and membership reports with visual analytics.</p>
+    </div>
+  </div>
+
+  <div class="content" id="members">
+    <button class="back-button" id="backToHomeFromMembers">
+      <i class="fas fa-arrow-left"></i> Back to Home
+    </button>
+    <div class="section-header">
+      <h2><i class="fas fa-users"></i> Members Management</h2>
+      <div class="export-buttons">
+        <button class="export-btn" id="exportPDF">
+          <i class="fas fa-file-pdf"></i> Export PDF
+        </button>
+        <button class="export-btn" id="exportExcel">
+          <i class="fas fa-file-excel"></i> Export Excel
+        </button>
+      </div>
+    </div>
+    <p class="small-muted">Register new members and manage their beneficiaries with ease.</p>
+    
+    <div class="form-search-container">
+      <form id="memberForm">
+        <input type="text" id="memberNumber" placeholder="Member Number">
+        <input type="text" id="name" placeholder="Full Name" required>
+        <input type="text" id="idNumber" placeholder="ID Number" required>
+        <input type="text" id="phone" placeholder="Phone Number" required>
+
+        <button type="submit" id="memberSubmit" class="add-btn-green">
+          <i class="fas fa-plus"></i> Add Member
+        </button>
+      </form>
+
+      <input type="text" id="memberSearch" placeholder="Search by name or member number...">
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Member Number</th>
+          <th>Full Name</th>
+          <th>ID Number</th>
+          <th>Phone</th>
+          <th>Beneficiaries</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="memberList"></tbody>
+    </table>
+  </div>
+
+  <div class="content" id="payments">
+    <button class="back-button" id="backToHomeFromPayments">
+      <i class="fas fa-arrow-left"></i> Back to Home
+    </button>
+    <div class="section-header">
+      <h2><i class="fas fa-money-bill-wave"></i> Payment Management</h2>
+      <div class="export-buttons">
+        <button class="export-btn" id="exportPaymentsExcel">
+          <i class="fas fa-file-excel"></i> Export to Excel
+        </button>
+      </div>
+    </div>
+    <p class="small-muted">Record and track member payments, fines, and other contributions.</p>
+    
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="summary-card" id="monthlyCollectionsCard">
+        <h3>Monthly Collections</h3>
+        <div class="amount" id="monthlyCollections">R0.00</div>
+      </div>
+      <div class="summary-card" id="finesCollectedCard">
+        <h3>Fines Collected</h3>
+        <div class="amount" id="finesCollected">R0.00</div>
+      </div>
+      <div class="summary-card" id="transportMoneyCard">
+        <h3>Transport Money</h3>
+        <div class="amount" id="transportMoney">R0.00</div>
+      </div>
+      <div class="summary-card total" id="totalCollectedCard">
+        <h3>Total Collected</h3>
+        <div class="amount" id="totalCollected">R0.00</div>
+      </div>
+    </div>
+    
+    <!-- Expandable Details -->
+    <div class="expandable-section" id="paymentDetailsSection">
+      <div class="expandable-header">
+        <h3><i class="fas fa-receipt"></i> Payment Details</h3>
+        <i class="fas fa-chevron-down expand-icon"></i>
+      </div>
+      <div class="expandable-content">
+        <div class="expandable-content-inner">
+          <!-- Payment Form -->
+          <form id="paymentForm">
+            <select id="paymentMember" required>
+              <option value="">Select Member</option>
+            </select>
+            <input type="date" id="paymentDate" required>
+            <input type="number" id="monthlyCollection" placeholder="Monthly Collection" step="0.01">
+            <select id="dressCode">
+              <option value="">Select Dress Code</option>
+              <option value="Jacket">Jacket</option>
+              <option value="Shirt">Shirt</option>
+              <option value="Other">Other</option>
+            </select>
+            <select id="fineType">
+              <option value="">Select Fine Type</option>
+              <option value="Late Coming">Late Coming</option>
+              <option value="Swearing">Swearing</option>
+              <option value="Absence">Absence</option>
+              <option value="Misconduct">Misconduct</option>
+              <option value="Other">Other</option>
+            </select>
+            <input type="number" id="fineAmount" placeholder="Fine Amount" step="0.01">
+            <div class="custom-select">
+              <select id="transport" placeholder="Transport Money" step="0.01">
+                <option value="">Select Transport Payment</option>
+                <option value="20">R20 Transport Fee</option>
+              </select>
+            </div>
+            <button type="button" id="transportPaymentBtn" class="btn btn-primary">
+              <i class="fas fa-bus"></i> Add Transport Payment
+            </button>
+            <button type="submit" class="btn btn-green">
+              <i class="fas fa-plus"></i> Add Payment
+            </button>
+          </form>
+          
+          <!-- Payment Table -->
+          <table>
+            <thead>
+              <tr>
+                <th>Book No</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Date</th>
+                <th>Monthly Collections</th>
+                <th>Dress Code</th>
+                <th>Fines</th>
+                <th>Transport</th>
+                <th>Total Payment</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="paymentList"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content" id="reports">
+    <button class="back-button" id="backToHomeFromReports">
+      <i class="fas fa-arrow-left"></i> Back to Home
+    </button>
+    <div class="section-header">
+      <h2><i class="fas fa-chart-bar"></i> Reports</h2>
+      <div class="export-buttons">
+        <button class="export-btn" id="exportReportsPDF">
+          <i class="fas fa-file-pdf"></i> Export PDF
+        </button>
+        <button class="export-btn" id="exportReportsExcel">
+          <i class="fas fa-file-excel"></i> Export Excel
+        </button>
+      </div>
+    </div>
+    <p class="small-muted">Generate summaries of income, expenses, and membership statistics.</p>
+    
+    <!-- Reports Grid -->
+    <div class="reports-grid" id="reportsDashboard">
+      <div class="report-card" data-report="statements">
+        <div class="report-icon">
+          <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+        <h3>Members Collect</h3>
+        <p>View detailed payment statements and collection reports for all members with comprehensive breakdowns.</p>
+        <div class="report-card-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+      
+      <div class="report-card warning" data-report="fines">
+        <div class="report-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3>Fines Management</h3>
+        <p>Manage and track fines for member violations and late payments with detailed statements.</p>
+        <div class="report-card-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+      
+      <div class="report-card" data-report="redflags">
+        <div class="report-icon">
+          <i class="fas fa-flag"></i>
+        </div>
+        <h3>Red Flagged Membership</h3>
+        <p>Identify members who haven't made monthly payments in over 6 months and require immediate attention.</p>
+        <div class="report-card-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+      
+      <div class="report-card danger" data-report="transport">
+        <div class="report-icon">
+          <i class="fas fa-bus"></i>
+        </div>
+        <h3>Transport Collection Due</h3>
+        <p>Manage and track funeral transport collections with automated payment tracking.</p>
+        <div class="report-card-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Individual Report Views -->
+    <div class="report-content" id="statementsReport">
+      <button class="back-button" id="backToReportsFromStatements">
+        <i class="fas fa-arrow-left"></i> Back to Reports
+      </button>
+      <div class="report-header">
+        <h2><i class="fas fa-file-invoice-dollar"></i> Members Collect</h2>
+        <div class="export-buttons">
+          <button class="export-btn" id="exportStatementsPDF">
+            <i class="fas fa-file-pdf"></i> Export PDF
+          </button>
+          <button class="export-btn" id="exportStatementsExcel">
+            <i class="fas fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="report-actions">
+        <button class="quick-action-btn" id="generateAllStatements">
+          <i class="fas fa-sync"></i> Generate All Statements
+        </button>
+        <button class="quick-action-btn success" id="monthlyStatementBtn">
+          <i class="fas fa-file-alt"></i> Monthly Statement
+        </button>
+        <button class="quick-action-btn warning" id="yearlyProgressBtn">
+          <i class="fas fa-calendar-alt"></i> Yearly Progress
+        </button>
+      </div>
+
+      <div id="statementsContainer"></div>
+    </div>
+
+    <!-- Fines Management Report -->
+    <div class="report-content" id="finesReport">
+      <button class="back-button" id="backToReportsFromFines">
+        <i class="fas fa-arrow-left"></i> Back to Reports
+      </button>
+      <div class="report-header">
+        <h2><i class="fas fa-exclamation-triangle"></i> Fines Management</h2>
+        <div class="export-buttons">
+          <button class="export-btn" id="exportFinesPDF">
+            <i class="fas fa-file-pdf"></i> Export PDF
+          </button>
+          <button class="export-btn" id="exportFinesExcel">
+            <i class="fas fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="report-actions">
+        <button class="quick-action-btn warning" id="generateFinesReport">
+          <i class="fas fa-sync"></i> Generate Fines Report
+        </button>
+      </div>
+
+      <div id="finesContainer"></div>
+    </div>
+
+    <!-- Red Flagged Members Report -->
+    <div class="report-content" id="redflagsReport">
+      <button class="back-button" id="backToReportsFromRedflags">
+        <i class="fas fa-arrow-left"></i> Back to Reports
+      </button>
+      <div class="report-header">
+        <h2><i class="fas fa-flag"></i> Red Flagged Membership</h2>
+        <div class="export-buttons">
+          <button class="export-btn" id="exportRedflagsPDF">
+            <i class="fas fa-file-pdf"></i> Export PDF
+          </button>
+          <button class="export-btn" id="exportRedflagsExcel">
+            <i class="fas fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="report-actions">
+        <button class="quick-action-btn warning" id="generateRedFlagReport">
+          <i class="fas fa-flag"></i> Generate Red Flag Report
+        </button>
+      </div>
+
+      <div id="redFlagContainer"></div>
+    </div>
+
+    <!-- Transport Collection Report -->
+    <div class="report-content" id="transportReport">
+      <button class="back-button" id="backToReportsFromTransport">
+        <i class="fas fa-arrow-left"></i> Back to Reports
+      </button>
+      <div class="report-header">
+        <h2><i class="fas fa-bus"></i> Transport Collection Due</h2>
+        <div class="export-buttons">
+          <button class="export-btn" id="exportTransportPDF">
+            <i class="fas fa-file-pdf"></i> Export PDF
+          </button>
+          <button class="export-btn" id="exportTransportExcel">
+            <i class="fas fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="report-actions">
+        <button class="quick-action-btn success" id="chargeTransportFee">
+          <i class="fas fa-plus-circle"></i> Charge R20 Transport Fee to All
+        </button>
+        <button class="quick-action-btn warning" id="generateTransportReport">
+          <i class="fas fa-sync"></i> Refresh Transport Report
+        </button>
+      </div>
+
+      <div id="transportContainer"></div>
+    </div>
+    
+  </div>
+
+  <!-- Modals -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-exclamation-circle"></i> Confirm Deletion</h3>
+      <p>Are you sure you want to delete this member? This action cannot be undone.</p>
+      <div class="modal-buttons">
+        <button id="confirmDelete" class="btn btn-red"><i class="fas fa-check"></i> Yes, Delete</button>
+        <button id="cancelDelete" class="btn btn-ghost"><i class="fas fa-times"></i> Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="editChoiceModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-edit"></i> Edit Options</h3>
+      <p>What would you like to edit for this member?</p>
+      <div class="modal-buttons">
+        <button id="choiceEditMember" class="btn btn-orange"><i class="fas fa-user-edit"></i> Edit Member</button>
+        <button id="choiceEditBen" class="btn btn-green"><i class="fas fa-users"></i> Edit Beneficiaries</button>
+        <button id="choiceCancel" class="btn btn-ghost"><i class="fas fa-times"></i> Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="addBenModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-user-plus"></i> Add Beneficiary</h3>
+      <div id="addBenContainer" style="display:flex;flex-direction:column;gap:0.8rem;margin-top:1rem;"></div>
+      <div style="display:flex;gap:0.8rem;justify-content:center;margin-top:1.5rem;">
+        <button id="addBenSave" class="btn btn-green"><i class="fas fa-save"></i> Add Beneficiary</button>
+        <button id="addBenCancel" class="btn btn-ghost"><i class="fas fa-times"></i> Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="editBenModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-users"></i> Edit Beneficiaries</h3>
+      <div id="modalBenContainer" style="display:flex;flex-direction:column;gap:0.8rem;margin-top:1rem;"></div>
+      <div style="display:flex;gap:0.8rem;justify-content:center;margin-top:1.5rem;">
+        <button id="modalAddRow" class="btn btn-primary"><i class="fas fa-plus"></i> Add Row</button>
+        <button id="modalSaveBen" class="btn btn-green"><i class="fas fa-save"></i> Save Changes</button>
+        <button id="modalCancelBen" class="btn btn-ghost"><i class="fas fa-times"></i> Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Tshilapfene Burial Society. All rights reserved.</p>
+  </footer>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<script>
+// DOM Elements and Data
+const toggleBtn = document.getElementById("themeToggle");
+const navLinks = document.querySelectorAll("nav ul li a, .card");
+const sections = document.querySelectorAll(".content");
+const homeHero = document.getElementById("homeSection");
+const homeCards = document.getElementById("homeCards");
+const memberForm = document.getElementById("memberForm");
+const memberList = document.getElementById("memberList");
+const searchInput = document.getElementById("memberSearch");
+const memberSubmit = document.getElementById("memberSubmit");
+const paymentForm = document.getElementById("paymentForm");
+const paymentList = document.getElementById("paymentList");
+const paymentMemberSelect = document.getElementById("paymentMember");
+const exportPaymentsExcelBtn = document.getElementById("exportPaymentsExcel");
+const exportExcelBtn = document.getElementById("exportExcel");
+const toast = document.getElementById("toast");
+
+// Data
+let members = JSON.parse(localStorage.getItem("members")) || [];
+let payments = JSON.parse(localStorage.getItem("payments")) || [];
+let editIndex = -1;
+let deleteIndex = null;
+let currentMemberIndex = null;
+
+// Initialize with sample data if empty
+if (members.length === 0) {
+  members = [
+    { memberNumber: "001", name: "John Doe", idNumber: "8501011234081", phone: "0712345678", beneficiaries: [] },
+    { memberNumber: "002", name: "Jane Smith", idNumber: "9002155678082", phone: "0723456789", beneficiaries: [] },
+    { memberNumber: "003", name: "Robert Brown", idNumber: "8803057890083", phone: "0734567890", beneficiaries: [] }
+  ];
+  saveMembers();
+}
+
+if (payments.length === 0) {
+  payments = [
+    { bookNo: 1, name: "John", surname: "Doe", date: "2025-01-15", monthlyCollection: 100, dressCode: "Jacket", fines: "Late Coming (R30.00) - Paid", transport: 20, totalPayment: 900 },
+    { bookNo: 2, name: "Jane", surname: "Smith", date: "2025-01-16", monthlyCollection: 100, dressCode: "Shirt", fines: "Swearing - Due", transport: 20, totalPayment: 620 },
+    { bookNo: 3, name: "Robert", surname: "Brown", date: "2025-01-17", monthlyCollection: 100, dressCode: "", fines: "Absence (R50.00) - Paid", transport: 0, totalPayment: 150 }
+  ];
+  savePayments();
+}
+
+// Helper Functions
+function showToast(message, type = 'success') {
+  toast.textContent = message;
+  toast.className = `toast ${type} show`;
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3000);
+}
+
+function escHtml(str=''){ 
+  return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); 
+}
+
+function saveMembers(){ 
+  localStorage.setItem('members', JSON.stringify(members)); 
+}
+
+function savePayments(){ 
+  localStorage.setItem('payments', JSON.stringify(payments)); 
+}
+
+function formatCurrency(amount) {
+  return 'R' + parseFloat(amount || 0).toFixed(2);
+}
+
+function calculateTotalPayment(payment) {
+  let total = 0;
+  total += parseFloat(payment.monthlyCollection || 0);
+  total += parseFloat(payment.transport || 0);
+  
+  if (payment.dressCode === 'Jacket') total += 750;
+  else if (payment.dressCode === 'Shirt') total += 500;
+  
+  // Extract fine amount if present
+  if (payment.fines && payment.fines.includes('(R')) {
+    const fineMatch = payment.fines.match(/\(R([0-9.]+)\)/);
+    if (fineMatch) {
+      total += parseFloat(fineMatch[1]);
+    }
+  }
+  
+  return total;
+}
+
+function generateMemberNumber() {
+  const maxNumber = members.reduce((max, member) => {
+    const num = parseInt(member.memberNumber) || 0;
+    return num > max ? num : max;
+  }, 0);
+  return (maxNumber + 1).toString().padStart(3, '0');
+}
+
+function extractAmountFromString(str) {
+  if (typeof str === 'number') return str;
+  if (typeof str === 'string' && str.includes('(R')) {
+    const amountMatch = str.match(/\(R([0-9.]+)\)/);
+    if (amountMatch) {
+      return parseFloat(amountMatch[1]);
+    }
+  }
+  return 0;
+}
+
+// Render Members
+function renderMembers(filter=''){
+  memberList.innerHTML = '';
+  const q = (filter||'').toLowerCase().trim();
+
+  members.forEach((m, index) => {
+    const name = (m.name||'').toLowerCase();
+    const memNum = (m.memberNumber||'').toString();
+    const show = !q || name.includes(q) || memNum.includes(q);
+    if(!show) return;
+
+    let beneficiariesHtml = '';
+    if (m.beneficiaries && m.beneficiaries.length > 0) {
+      beneficiariesHtml = m.beneficiaries.map(ben => `
+        <div class="beneficiaries-list">
+          <div><strong>${escHtml(ben.name)}</strong></div>
+          <div class="beneficiary-id">ID: ${escHtml(ben.id)} | ${escHtml(ben.relationship)}</div>
+        </div>
+      `).join('');
+    } else {
+      beneficiariesHtml = '<span class="small-muted">No beneficiaries added</span>';
+    }
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${escHtml(m.memberNumber || 'N/A')}</td>
+      <td>${escHtml(m.name||'')}</td>
+      <td>${escHtml(m.idNumber||'')}</td>
+      <td>${escHtml(m.phone||'')}</td>
+      <td>${beneficiariesHtml}</td>
+      <td>
+        <button class="beneficiary-btn" data-index="${index}"><i class="fas fa-user-plus"></i> Add Beneficiary</button>
+        <button class="edit-btn" data-index="${index}"><i class="fas fa-edit"></i> Edit</button>
+        <button class="delete-btn" data-index="${index}"><i class="fas fa-trash"></i> Delete</button>
+      </td>
+    `;
+    memberList.appendChild(row);
+  });
+
+  // Add event listeners
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => openEditChoiceModal(btn.getAttribute('data-index')));
+  });
+  
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', () => openDeleteModal(btn.getAttribute('data-index')));
+  });
+  
+  document.querySelectorAll('.beneficiary-btn').forEach(btn => {
+    btn.addEventListener('click', () => openAddBeneficiaryModal(btn.getAttribute('data-index')));
+  });
+}
+
+// Update payment member dropdown
+function updatePaymentMemberDropdown() {
+  paymentMemberSelect.innerHTML = '<option value="">Select Member</option>';
+  members.forEach((member, index) => {
+    const option = document.createElement('option');
+    option.value = index;
+    option.textContent = `${member.name} ${member.memberNumber ? `(${member.memberNumber})` : ''}`;
+    paymentMemberSelect.appendChild(option);
+  });
+}
+
+// Render Payments
+function renderPayments() {
+  paymentList.innerHTML = '';
+  payments.forEach((payment, index) => {
+    payment.totalPayment = calculateTotalPayment(payment);
+    
+    const member = members.find(m => 
+      m.name.split(' ')[0] === payment.name && 
+      m.name.split(' ').slice(1).join(' ') === payment.surname
+    );
+    
+    const bookNo = member && member.memberNumber ? member.memberNumber : payment.bookNo;
+    
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${bookNo || ''}</td>
+      <td>${escHtml(payment.name || '')}</td>
+      <td>${escHtml(payment.surname || '')}</td>
+      <td>${payment.date || ''}</td>
+      <td>${payment.monthlyCollection ? formatCurrency(payment.monthlyCollection) : 'R0.00'}</td>
+      <td>${payment.dressCode || ''}</td>
+      <td>${payment.fines || ''}</td>
+      <td>${payment.transport ? formatCurrency(payment.transport) : 'R0.00'}</td>
+      <td>${formatCurrency(payment.totalPayment)}</td>
+      <td>
+        <button class="edit-btn" data-payment-index="${index}"><i class="fas fa-edit"></i> Edit</button>
+        <button class="delete-btn" data-payment-index="${index}"><i class="fas fa-trash"></i> Delete</button>
+      </td>
+    `;
+    paymentList.appendChild(row);
+  });
+
+  // Add event listeners for payment edit and delete buttons
+  document.querySelectorAll('#paymentList .edit-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const paymentIndex = parseInt(this.getAttribute('data-payment-index'));
+      editPayment(paymentIndex);
+    });
+  });
+
+  document.querySelectorAll('#paymentList .delete-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const paymentIndex = parseInt(this.getAttribute('data-payment-index'));
+      deletePayment(paymentIndex);
+    });
+  });
+}
+
+// Edit payment function
+function editPayment(paymentIndex) {
+  const payment = payments[paymentIndex];
+  
+  // Find the member
+  const memberIndex = members.findIndex(m => 
+    m.name.split(' ')[0] === payment.name && 
+    m.name.split(' ').slice(1).join(' ') === payment.surname
+  );
+  
+  if (memberIndex !== -1) {
+    document.getElementById('paymentMember').value = memberIndex;
+  }
+  
+  document.getElementById('paymentDate').value = payment.date;
+  document.getElementById('monthlyCollection').value = payment.monthlyCollection || '';
+  document.getElementById('dressCode').value = payment.dressCode || '';
+  
+  // Extract fine type and amount
+  if (payment.fines) {
+    const fineParts = payment.fines.split('(');
+    if (fineParts.length > 1) {
+      const fineType = fineParts[0].trim();
+      const fineAmount = fineParts[1].replace('R', '').replace(')', '').replace(' - Paid', '').replace(' - Due', '').trim();
+      document.getElementById('fineType').value = fineType;
+      document.getElementById('fineAmount').value = fineAmount;
+    } else {
+      const fineType = payment.fines.replace(' - Paid', '').replace(' - Due', '').trim();
+      document.getElementById('fineType').value = fineType;
+      document.getElementById('fineAmount').value = '';
+    }
+  } else {
+    document.getElementById('fineType').value = '';
+    document.getElementById('fineAmount').value = '';
+  }
+  
+  document.getElementById('transport').value = payment.transport || '';
+  
+  // Remove the payment being edited
+  payments.splice(paymentIndex, 1);
+  
+  // Update the display
+  renderPayments();
+  updatePaymentSummary();
+  
+  showToast('Payment loaded for editing. Update the form and click "Add Payment" to save changes.');
+}
+
+// Delete payment function
+function deletePayment(paymentIndex) {
+  if (confirm('Are you sure you want to delete this payment record?')) {
+    payments.splice(paymentIndex, 1);
+    savePayments();
+    renderPayments();
+    updatePaymentSummary();
+    showToast('Payment record deleted successfully!');
+  }
+}
+
+// Update Payment Summary
+function updatePaymentSummary() {
+  let totalCollected = 0;
+  let monthlyCollections = 0;
+  let finesCollected = 0;
+  let transportMoney = 0;
+  
+  payments.forEach(payment => {
+    totalCollected += parseFloat(payment.totalPayment || 0);
+    monthlyCollections += parseFloat(payment.monthlyCollection || 0);
+    finesCollected += extractAmountFromString(payment.fines);
+    transportMoney += parseFloat(payment.transport || 0);
+  });
+  
+  document.getElementById("totalCollected").textContent = formatCurrency(totalCollected);
+  document.getElementById("monthlyCollections").textContent = formatCurrency(monthlyCollections);
+  document.getElementById("finesCollected").textContent = formatCurrency(finesCollected);
+  document.getElementById("transportMoney").textContent = formatCurrency(transportMoney);
+}
+
+// Form Submission - FIXED INPUT VALIDATION
+memberForm.addEventListener('submit', e => {
+  e.preventDefault();
+  const memberNumber = document.getElementById('memberNumber').value.trim();
+  const name = document.getElementById('name').value.trim();
+  const idNumber = document.getElementById('idNumber').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  
+  if(!name || !idNumber || !phone){ 
+    showToast('Please fill in all required fields', 'error');
+    return; 
+  }
+
+  // Check if member number is already taken
+  if (memberNumber) {
+    const isMemberNumberTaken = members.some(member => 
+      member.memberNumber === memberNumber && 
+      (editIndex < 0 || members[editIndex].memberNumber !== memberNumber)
+    );
+    
+    if (isMemberNumberTaken) {
+      showToast('This member number is already taken', 'error');
+      return;
+    }
+  }
+
+  // Check if ID number is already taken
+  const isIdNumberTaken = members.some(member => 
+    member.idNumber === idNumber && 
+    (editIndex < 0 || members[editIndex].idNumber !== idNumber)
+  );
+  
+  if (isIdNumberTaken) {
+    showToast('This ID number is already registered', 'error');
+    return;
+  }
+
+  const memberObj = { 
+    memberNumber: memberNumber || generateMemberNumber(), 
+    name, 
+    idNumber, 
+    phone,
+    beneficiaries: []
+  };
+
+  if(editIndex >= 0){
+    members[editIndex] = {...members[editIndex], ...memberObj};
+    editIndex = -1;
+    memberSubmit.innerHTML = '<i class="fas fa-plus"></i> Add Member';
+    memberSubmit.classList.remove('update-btn-blue');
+    memberSubmit.classList.add('add-btn-green');
+    showToast('Member updated successfully!');
+  } else {
+    members.push(memberObj);
+    showToast('Member added successfully!');
+  }
+  
+  saveMembers();
+  renderMembers(searchInput.value.trim());
+  updatePaymentMemberDropdown();
+  memberForm.reset();
+});
+
+// Enhanced Payment Form Submission to handle fine status
+paymentForm.addEventListener('submit', e => {
+  e.preventDefault();
+  
+  const memberIndex = document.getElementById('paymentMember').value;
+  if (!memberIndex) {
+    showToast('Please select a member', 'error');
+    return;
+  }
+  
+  const member = members[memberIndex];
+  if (!member) return;
+  
+  const date = document.getElementById('paymentDate').value;
+  const monthlyCollection = parseFloat(document.getElementById('monthlyCollection').value) || 0;
+  const dressCode = document.getElementById('dressCode').value;
+  const fineType = document.getElementById('fineType').value;
+  const fineAmount = parseFloat(document.getElementById('fineAmount').value) || 0;
+  const transport = parseFloat(document.getElementById('transport').value) || 0;
+  
+  // Determine fine status based on whether amount is entered
+  let fineDisplay = '';
+  if (fineType && fineAmount > 0) {
+    fineDisplay = `${fineType} (${formatCurrency(fineAmount)}) - Paid`;
+  } else if (fineType) {
+    fineDisplay = `${fineType} - Due`;
+  }
+  
+  const paymentObj = {
+    bookNo: member.memberNumber || payments.length + 1,
+    name: member.name.split(' ')[0],
+    surname: member.name.split(' ').slice(1).join(' ') || '',
+    date,
+    monthlyCollection,
+    dressCode,
+    fines: fineDisplay,
+    transport
+  };
+  
+  paymentObj.totalPayment = calculateTotalPayment(paymentObj);
+  
+  payments.push(paymentObj);
+  savePayments();
+  renderPayments();
+  updatePaymentSummary();
+  paymentForm.reset();
+  document.getElementById('paymentDate').valueAsDate = new Date();
+  
+  showToast('Payment recorded successfully!');
+});
+
+// Search functionality
+searchInput.addEventListener('input', function() {
+  renderMembers(this.value.trim());
+});
+
+// Modal Functions
+function openEditChoiceModal(index) {
+  currentMemberIndex = parseInt(index);
+  document.getElementById('editChoiceModal').style.display = 'flex';
+}
+
+function closeEditChoiceModal() {
+  document.getElementById('editChoiceModal').style.display = 'none';
+  currentMemberIndex = null;
+}
+
+function editMember(index) {
+  const member = members[index];
+  document.getElementById('memberNumber').value = member.memberNumber || '';
+  document.getElementById('name').value = member.name || '';
+  document.getElementById('idNumber').value = member.idNumber || '';
+  document.getElementById('phone').value = member.phone || '';
+  
+  editIndex = index;
+  memberSubmit.innerHTML = '<i class="fas fa-save"></i> Update Member';
+  memberSubmit.classList.remove('add-btn-green');
+  memberSubmit.classList.add('update-btn-blue');
+  
+  closeEditChoiceModal();
+  document.getElementById('memberForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function openAddBeneficiaryModal(index) {
+  currentMemberIndex = parseInt(index);
+  const container = document.getElementById('addBenContainer');
+  container.innerHTML = `
+    <div class="ben-row" style="display: flex; gap: 0.5rem; margin-bottom: 0.8rem;">
+      <input class="ben-name" type="text" placeholder="Beneficiary name" style="flex: 2; padding: 8px; border-radius: 4px; border: 1px solid #ddd;" required>
+      <input class="ben-id" type="text" placeholder="Beneficiary ID" style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ddd;" required>
+      <select class="ben-rel" style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+        <option value="Policy Holder">Policy Holder</option>
+        <option value="Spouse">Spouse</option>
+        <option value="Son">Son</option>
+        <option value="Daughter">Daughter</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+  `;
+  document.getElementById('addBenModal').style.display = 'flex';
+}
+
+function closeAddBeneficiaryModal() {
+  document.getElementById('addBenModal').style.display = 'none';
+  currentMemberIndex = null;
+}
+
+function openEditBeneficiariesModal(index) {
+  currentMemberIndex = parseInt(index);
+  const member = members[currentMemberIndex];
+  const container = document.getElementById('modalBenContainer');
+  container.innerHTML = '';
+  
+  if (member.beneficiaries && member.beneficiaries.length > 0) {
+    member.beneficiaries.forEach((ben, benIndex) => {
+      addBeneficiaryRow(container, ben.name, ben.id, ben.relationship, benIndex);
+    });
+  } else {
+    addBeneficiaryRow(container);
+  }
+  
+  document.getElementById('editBenModal').style.display = 'flex';
+}
+
+function addBeneficiaryRow(container, name = '', id = '', relationship = 'Policy Holder', index = null) {
+  const row = document.createElement('div');
+  row.className = 'ben-row';
+  row.style.display = 'flex';
+  row.style.gap = '0.5rem';
+  row.style.marginBottom = '0.8rem';
+  row.style.alignItems = 'center';
+  
+  row.innerHTML = `
+    <input class="ben-name" type="text" placeholder="Beneficiary name" value="${name}" style="flex: 2; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+    <input class="ben-id" type="text" placeholder="Beneficiary ID" value="${id}" style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+    <select class="ben-rel" style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+      <option value="Policy Holder" ${relationship === 'Policy Holder' ? 'selected' : ''}>Policy Holder</option>
+      <option value="Spouse" ${relationship === 'Spouse' ? 'selected' : ''}>Spouse</option>
+      <option value="Son" ${relationship === 'Son' ? 'selected' : ''}>Son</option>
+      <option value="Daughter" ${relationship === 'Daughter' ? 'selected' : ''}>Daughter</option>
+      <option value="Other" ${relationship === 'Other' ? 'selected' : ''}>Other</option>
+    </select>
+    <button type="button" class="btn btn-red remove-ben" style="padding: 8px 12px;">
+      <i class="fas fa-trash"></i>
+    </button>
+  `;
+  
+  container.appendChild(row);
+  
+  row.querySelector('.remove-ben').addEventListener('click', function() {
+    if (container.children.length > 1) {
+      row.remove();
+    } else {
+      row.querySelector('.ben-name').value = '';
+      row.querySelector('.ben-id').value = '';
+      row.querySelector('.ben-rel').value = 'Policy Holder';
+    }
+  });
+}
+
+function closeEditBeneficiariesModal() {
+  document.getElementById('editBenModal').style.display = 'none';
+  currentMemberIndex = null;
+}
+
+function openDeleteModal(index) {
+  deleteIndex = parseInt(index);
+  document.getElementById('deleteModal').style.display = 'flex';
+}
+
+function closeDeleteModal() {
+  document.getElementById('deleteModal').style.display = 'none';
+  deleteIndex = null;
+}
+
+// Event listeners for modals
+document.getElementById('choiceEditMember').addEventListener('click', function() {
+  if (currentMemberIndex !== null) {
+    editMember(currentMemberIndex);
+  }
+});
+
+document.getElementById('choiceEditBen').addEventListener('click', function() {
+  if (currentMemberIndex !== null) {
+    openEditBeneficiariesModal(currentMemberIndex);
+  }
+});
+
+document.getElementById('choiceCancel').addEventListener('click', closeEditChoiceModal);
+
+document.getElementById('addBenSave').addEventListener('click', function() {
+  if (currentMemberIndex === null) return;
+  
+  const benRow = document.querySelector('#addBenContainer .ben-row');
+  const name = benRow.querySelector('.ben-name').value.trim();
+  const id = benRow.querySelector('.ben-id').value.trim();
+  const relationship = benRow.querySelector('.ben-rel').value;
+  
+  if (!name || !id) {
+    showToast('Please fill in beneficiary name and ID', 'error');
+    return;
+  }
+  
+  const beneficiary = { name, id, relationship };
+  
+  if (!members[currentMemberIndex].beneficiaries) {
+    members[currentMemberIndex].beneficiaries = [];
+  }
+  
+  members[currentMemberIndex].beneficiaries.push(beneficiary);
+  saveMembers();
+  renderMembers(searchInput.value.trim());
+  closeAddBeneficiaryModal();
+  showToast('Beneficiary added successfully!');
+});
+
+document.getElementById('addBenCancel').addEventListener('click', closeAddBeneficiaryModal);
+
+document.getElementById('modalAddRow').addEventListener('click', function() {
+  const container = document.getElementById('modalBenContainer');
+  addBeneficiaryRow(container);
+});
+
+document.getElementById('modalSaveBen').addEventListener('click', function() {
+  if (currentMemberIndex === null) return;
+  
+  const container = document.getElementById('modalBenContainer');
+  const benRows = container.querySelectorAll('.ben-row');
+  const beneficiaries = [];
+  
+  let hasErrors = false;
+  
+  benRows.forEach(row => {
+    const name = row.querySelector('.ben-name').value.trim();
+    const id = row.querySelector('.ben-id').value.trim();
+    const relationship = row.querySelector('.ben-rel').value;
+    
+    if (name && id) {
+      beneficiaries.push({ name, id, relationship });
+    } else if (name || id) {
+      hasErrors = true;
+    }
+  });
+  
+  if (hasErrors) {
+    showToast('Please fill in both name and ID for all beneficiaries', 'error');
+    return;
+  }
+  
+  members[currentMemberIndex].beneficiaries = beneficiaries;
+  saveMembers();
+  renderMembers(searchInput.value.trim());
+  closeEditBeneficiariesModal();
+  showToast('Beneficiaries updated successfully!');
+});
+
+document.getElementById('modalCancelBen').addEventListener('click', closeEditBeneficiariesModal);
+
+document.getElementById('confirmDelete').addEventListener('click', function() {
+  if (deleteIndex !== null) {
+    members.splice(deleteIndex, 1);
+    saveMembers();
+    renderMembers(searchInput.value.trim());
+    updatePaymentMemberDropdown();
+    closeDeleteModal();
+    showToast('Member deleted successfully!');
+  }
+});
+
+document.getElementById('cancelDelete').addEventListener('click', closeDeleteModal);
+
+// PROFESSIONAL EXPORT TO EXCEL FUNCTION WITH ENHANCED STYLING
+function exportToExcel(data, filename, sheetName) {
+  try {
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+    
+    // Prepare data for Excel
+    const wsData = [];
+    
+    // Add title row
+    const titleRow = [`${sheetName} Report - Generated on ${new Date().toLocaleDateString()}`];
+    wsData.push(titleRow);
+    
+    // Add empty row for spacing
+    wsData.push([]);
+    
+    // Add header row
+    if (data.length > 0) {
+      const headers = Object.keys(data[0]);
+      wsData.push(headers);
+    }
+    
+    // Add data rows
+    data.forEach(row => {
+      const rowData = [];
+      Object.keys(row).forEach(key => {
+        rowData.push(row[key]);
+      });
+      wsData.push(rowData);
+    });
+
+    // Create worksheet from data
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    
+    // Apply professional styling
+    if (ws['!ref']) {
+      const range = XLSX.utils.decode_range(ws['!ref']);
+      
+      // Style title row (A1)
+      const titleCell = 'A1';
+      if (!ws[titleCell]) ws[titleCell] = { v: wsData[0][0] };
+      ws[titleCell].s = {
+        font: { 
+          color: { rgb: "FFFFFF" }, 
+          bold: true, 
+          sz: 16,
+          name: "Arial"
+        },
+        fill: { fgColor: { rgb: "2C3E50" } },
+        alignment: { 
+          horizontal: "center", 
+          vertical: "center" 
+        },
+        border: {
+          top: { style: "medium", color: { rgb: "1C2C3C" } },
+          left: { style: "medium", color: { rgb: "1C2C3C" } },
+          bottom: { style: "medium", color: { rgb: "1C2C3C" } },
+          right: { style: "medium", color: { rgb: "1C2C3C" } }
+        }
+      };
+      
+      // Merge title across all columns
+      if (data.length > 0) {
+        const numCols = Object.keys(data[0]).length;
+        ws['!merges'] = ws['!merges'] || [];
+        ws['!merges'].push({
+          s: { r: 0, c: 0 },
+          e: { r: 0, c: numCols - 1 }
+        });
+      }
+      
+      // Style header row (row 3)
+      for (let C = range.s.c; C <= range.e.c; ++C) {
+        const cellAddress = XLSX.utils.encode_cell({ r: 2, c: C });
+        if (!ws[cellAddress]) continue;
+        
+        ws[cellAddress].s = {
+          font: { 
+            color: { rgb: "FFFFFF" }, 
+            bold: true, 
+            sz: 12,
+            name: "Arial"
+          },
+          fill: { fgColor: { rgb: "3498DB" } },
+          alignment: { 
+            horizontal: "center", 
+            vertical: "center" 
+          },
+          border: {
+            top: { style: "medium", color: { rgb: "2980B9" } },
+            left: { style: "medium", color: { rgb: "2980B9" } },
+            bottom: { style: "medium", color: { rgb: "2980B9" } },
+            right: { style: "medium", color: { rgb: "2980B9" } }
+          }
+        };
+      }
+      
+      // Style data rows (starting from row 4)
+      for (let R = 3; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+          const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+          if (!ws[cellAddress]) continue;
+          
+          // Check if this is a currency value
+          const header = wsData[2][C];
+          const isCurrency = header && (
+            header.toLowerCase().includes('amount') || 
+            header.toLowerCase().includes('payment') || 
+            header.toLowerCase().includes('collection') || 
+            header.toLowerCase().includes('total') ||
+            header.toLowerCase().includes('fee') ||
+            header.toLowerCase().includes('fine') ||
+            header.toLowerCase().includes('transport')
+          );
+          
+          ws[cellAddress].s = {
+            font: { 
+              sz: 11, 
+              name: "Arial",
+              color: isCurrency ? { rgb: "27AE60" } : { rgb: "2C3E50" }
+            },
+            alignment: { 
+              horizontal: "center", 
+              vertical: "center" 
+            },
+            border: {
+              top: { style: "thin", color: { rgb: "BDC3C7" } },
+              left: { style: "thin", color: { rgb: "BDC3C7" } },
+              bottom: { style: "thin", color: { rgb: "BDC3C7" } },
+              right: { style: "thin", color: { rgb: "BDC3C7" } }
+            },
+            numFmt: isCurrency ? '"R"#,##0.00' : undefined
+          };
+          
+          // Alternate row coloring for better readability
+          if (R % 2 === 0) {
+            ws[cellAddress].s.fill = { fgColor: { rgb: "F8F9FA" } };
+          } else {
+            ws[cellAddress].s.fill = { fgColor: { rgb: "FFFFFF" } };
+          }
+          
+          // Make currency values bold
+          if (isCurrency) {
+            ws[cellAddress].s.font.bold = true;
+          }
+        }
+      }
+      
+      // Auto-fit columns
+      ws['!cols'] = [];
+      for (let C = range.s.c; C <= range.e.c; ++C) {
+        let maxLength = 0;
+        for (let R = 0; R <= range.e.r; ++R) {
+          const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+          if (ws[cellAddress] && ws[cellAddress].v) {
+            const cellLength = ws[cellAddress].v.toString().length;
+            if (cellLength > maxLength) maxLength = cellLength;
+          }
+        }
+        // Set column width with some padding
+        ws['!cols'].push({ wch: Math.min(Math.max(maxLength + 2, 12), 50) });
+      }
+      
+      // Set row heights for better appearance
+      ws['!rows'] = [
+        { hpt: 30 }, // Title row height
+        { hpt: 5 },  // Spacing row height
+        { hpt: 25 }, // Header row height
+      ];
+      for (let R = 3; R <= range.e.r; R++) {
+        ws['!rows'][R] = { hpt: 20 }; // Data rows height
+      }
+    }
+    
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    
+    // Generate and download file
+    const fileName = `${filename}_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+    
+    showToast('Professional Excel report downloaded successfully! 🎉');
+    
+  } catch (error) {
+    console.error('Export error:', error);
+    showToast('Error exporting to Excel', 'error');
+  }
+}
+
+// Export Members to Excel with enhanced data
+exportExcelBtn.addEventListener('click', function() {
+  const exportData = members.map(member => ({
+    'Member Number': member.memberNumber || 'N/A',
+    'Full Name': member.name,
+    'ID Number': member.idNumber,
+    'Phone Number': member.phone,
+    'Beneficiaries Count': member.beneficiaries ? member.beneficiaries.length : 0,
+    'Primary Beneficiary': member.beneficiaries && member.beneficiaries.length > 0 ? 
+      `${member.beneficiaries[0].name} (${member.beneficiaries[0].relationship})` : 'None',
+    'All Beneficiaries': member.beneficiaries ? 
+      member.beneficiaries.map(b => `${b.name} - ${b.id} - ${b.relationship}`).join('; ') : 'None',
+    'Registration Date': new Date().toISOString().split('T')[0],
+    'Status': 'Active'
+  }));
+  
+  exportToExcel(exportData, 'Members_Master', 'Members');
+});
+
+// Export Payments to Excel with enhanced data
+exportPaymentsExcelBtn.addEventListener('click', function() {
+  const exportData = payments.map(payment => {
+    const member = members.find(m => 
+      m.name.split(' ')[0] === payment.name && 
+      m.name.split(' ').slice(1).join(' ') === payment.surname
+    );
+    
+    return {
+      'Receipt Number': payment.bookNo,
+      'Member Number': member ? member.memberNumber : 'N/A',
+      'Full Name': `${payment.name} ${payment.surname}`,
+      'Payment Date': payment.date,
+      'Monthly Collection': payment.monthlyCollection || 0,
+      'Dress Code Payment': payment.dressCode ? (payment.dressCode === 'Jacket' ? 750 : 500) : 0,
+      'Fine Amount': payment.fines ? extractAmountFromString(payment.fines) : 0,
+      'Fine Type': payment.fines ? payment.fines.split('(')[0].trim().replace(' - Paid', '').replace(' - Due', '') : 'None',
+      'Fine Status': payment.fines ? (payment.fines.includes('Paid') ? 'Paid' : 'Due') : 'None',
+      'Transport Fee': payment.transport || 0,
+      'Total Payment': payment.totalPayment || calculateTotalPayment(payment),
+      'Payment Method': 'Cash',
+      'Processed By': 'System Admin'
+    };
+  });
+  
+  exportToExcel(exportData, 'Payments_Summary', 'Payments');
+});
+
+// Navigation and Theme
+toggleBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  toggleBtn.innerHTML = document.body.classList.contains("dark") ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+});
+
+document.getElementById("logoContainer").addEventListener('click', () => {
+  document.getElementById("logo").classList.toggle('expanded');
+});
+
+navLinks.forEach(link => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    const sectionId = link.getAttribute("data-section");
+    showSection(sectionId);
+  });
+});
+
+function showSection(sectionId) {
+  sections.forEach(sec => sec.classList.remove("active"));
+  homeHero.style.display = sectionId === "home" ? "block" : "none";
+  homeCards.style.display = sectionId === "home" ? "grid" : "none";
+  
+  if (sectionId && document.getElementById(sectionId)) {
+    document.getElementById(sectionId).classList.add("active");
+    
+    if (sectionId === "payments") {
+      updatePaymentMemberDropdown();
+      renderPayments();
+      updatePaymentSummary();
+    }
+    
+    if (sectionId === "members") {
+      renderMembers();
+    }
+  }
+}
+
+// Back buttons
+document.getElementById('backToHomeFromMembers').addEventListener('click', () => showSection('home'));
+document.getElementById('backToHomeFromPayments').addEventListener('click', () => showSection('home'));
+document.getElementById('backToHomeFromReports').addEventListener('click', () => showSection('home'));
+
+// Expandable section functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const expandableHeader = document.querySelector('.expandable-header');
+  const expandableContent = document.querySelector('.expandable-content');
+  const expandIcon = document.querySelector('.expand-icon');
+
+  if (expandableHeader && expandableContent) {
+    expandableHeader.addEventListener('click', function() {
+      const isExpanded = expandableContent.classList.contains('expanded');
+      
+      if (isExpanded) {
+        expandableContent.classList.remove('expanded');
+        expandableHeader.classList.remove('expanded');
+      } else {
+        expandableContent.classList.add('expanded');
+        expandableHeader.classList.add('expanded');
+      }
+    });
+  }
+
+  // Reports navigation
+  const reportCards = document.querySelectorAll('.report-card');
+  const reportContents = document.querySelectorAll('.report-content');
+  const reportsDashboard = document.getElementById('reportsDashboard');
+
+  reportCards.forEach(card => {
+    card.addEventListener('click', function() {
+      const reportType = this.getAttribute('data-report');
+      
+      // Hide all report contents and show the selected one
+      reportContents.forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      reportsDashboard.style.display = 'none';
+      
+      const targetReport = document.getElementById(`${reportType}Report`);
+      if (targetReport) {
+        targetReport.classList.add('active');
+      }
+    });
+  });
+
+  // Back buttons for reports
+  document.getElementById('backToReportsFromStatements').addEventListener('click', function() {
+    showReportsDashboard();
+  });
+  
+  document.getElementById('backToReportsFromFines').addEventListener('click', function() {
+    showReportsDashboard();
+  });
+  
+  document.getElementById('backToReportsFromRedflags').addEventListener('click', function() {
+    showReportsDashboard();
+  });
+  
+  document.getElementById('backToReportsFromTransport').addEventListener('click', function() {
+    showReportsDashboard();
+  });
+
+  function showReportsDashboard() {
+    reportContents.forEach(content => {
+      content.classList.remove('active');
+    });
+    reportsDashboard.style.display = 'grid';
+  }
+
+  // Initialize fines management in reports
+  document.getElementById('generateFinesReport').addEventListener('click', function() {
+    generateFinesReport();
+  });
+
+  // Add transport payment button functionality
+  document.getElementById('transportPaymentBtn').addEventListener('click', function() {
+    document.getElementById('transport').value = '20';
+    showToast('R20 transport fee added to form');
+  });
+
+  // Rest of your existing initialization code...
+  renderMembers('');
+  updatePaymentMemberDropdown();
+  renderPayments();
+  updatePaymentSummary();
+  
+  // Set default date to today
+  document.getElementById('paymentDate').valueAsDate = new Date();
+  
+  showToast('System loaded successfully!');
+});
+
+// Generate Fines Report
+function generateFinesReport() {
+  const finesContainer = document.getElementById('finesContainer');
+  finesContainer.innerHTML = '';
+
+  // Group fines by member
+  const memberFines = {};
+  
+  payments.forEach(payment => {
+    if (payment.fines) {
+      const memberKey = `${payment.name} ${payment.surname}`;
+      
+      if (!memberFines[memberKey]) {
+        memberFines[memberKey] = {
+          name: memberKey,
+          fines: [],
+          totalDue: 0,
+          totalPaid: 0
+        };
+      }
+      
+      const fineAmount = extractAmountFromString(payment.fines);
+      const isPaid = payment.fines.includes('Paid');
+      
+      memberFines[memberKey].fines.push({
+        date: payment.date,
+        description: payment.fines,
+        amount: fineAmount,
+        status: isPaid ? 'Paid' : 'Due'
+      });
+      
+      if (isPaid) {
+        memberFines[memberKey].totalPaid += fineAmount;
+      } else {
+        memberFines[memberKey].totalDue += fineAmount;
+      }
+    }
+  });
+
+  let hasFines = false;
+  
+  Object.values(memberFines).forEach(member => {
+    if (member.fines.length > 0) {
+      hasFines = true;
+      
+      const memberSection = document.createElement('div');
+      memberSection.className = 'expandable-section';
+      memberSection.innerHTML = `
+        <div class="expandable-header">
+          <h3><i class="fas fa-user"></i> ${escHtml(member.name)}</h3>
+          <span class="status-badge ${member.totalDue > 0 ? 'status-overdue' : 'status-paid'}">
+            ${member.totalDue > 0 ? 'Amount Due: ' + formatCurrency(member.totalDue) : 'All Paid'}
+          </span>
+          <i class="fas fa-chevron-down expand-icon"></i>
+        </div>
+        <div class="expandable-content">
+          <div class="expandable-content-inner">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Fine Description</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${member.fines.map(fine => `
+                  <tr>
+                    <td>${fine.date}</td>
+                    <td>${fine.description.replace(' - Paid', '').replace(' - Due', '')}</td>
+                    <td>${formatCurrency(fine.amount)}</td>
+                    <td>
+                      <span class="payment-status status-${fine.status.toLowerCase()}">
+                        ${fine.status}
+                      </span>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="2"><strong>Total Summary</strong></td>
+                  <td><strong>Due: ${formatCurrency(member.totalDue)}</strong></td>
+                  <td><strong>Paid: ${formatCurrency(member.totalPaid)}</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      `;
+      
+      finesContainer.appendChild(memberSection);
+    }
+  });
+
+  if (!hasFines) {
+    finesContainer.innerHTML = '<p class="small-muted">No fines recorded in the system.</p>';
+  }
+
+  // Add expand functionality to the newly created sections
+  document.querySelectorAll('#finesContainer .expandable-header').forEach(header => {
+    header.addEventListener('click', function() {
+      const content = this.nextElementSibling;
+      const isExpanded = content.classList.contains('expanded');
+      
+      if (isExpanded) {
+        content.classList.remove('expanded');
+        this.classList.remove('expanded');
+      } else {
+        content.classList.add('expanded');
+        this.classList.add('expanded');
+      }
+    });
+  });
+
+  showToast('Fines report generated successfully!');
+}
+</script>
+</body>
+</html>
