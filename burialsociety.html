@@ -7,26 +7,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 <style>
   :root {
-    --primary: #2c3e50;
-    --secondary: #3498db;
-    --accent: #e74c3c;
-    --success: #27ae60;
-    --warning: #f39c12;
-    --light: #ecf0f1;
-    --dark: #2c3e50;
-    --text: #2c3e50;
-    --text-light: #7f8c8d;
-    --bg: #f8f9fa;
-    --card-bg: #ffffff;
-    --nav-bg: #ffffff;
-    --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    --shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.12);
-    --transition: all 0.3s ease;
-  }
-
-  body.dark {
     --primary: #2c3e50;
     --secondary: #3498db;
     --accent: #e74c3c;
@@ -41,6 +25,7 @@
     --nav-bg: #2c3e50;
     --shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     --shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.25);
+    --danger-red: #fc8181;
   }
 
   * { 
@@ -52,23 +37,21 @@
   body { 
     background: var(--bg); 
     color: var(--text); 
-    transition: var(--transition);
+    transition: all 0.3s ease;
     line-height: 1.6;
     min-height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
 
-  /* Layout */
   .app-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
   }
 
-  /* Navigation */
   nav { 
     display: flex; 
-    justify-content: space-between; 
+    justify-content: flex-start; 
     align-items: center; 
     background: var(--nav-bg); 
     padding: 0.8rem 2rem; 
@@ -76,20 +59,20 @@
     position: sticky; 
     top: 0; 
     z-index: 100;
-    transition: var(--transition);
+    transition: all 0.3s ease;
   }
   
   .logo-container {
     display: flex;
     align-items: center;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s ease;
   }
   
   .logo {
     height: 60px;
     width: auto;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     border-radius: 8px;
     background: transparent;
     display: block;
@@ -103,13 +86,14 @@
     list-style: none; 
     display: flex; 
     gap: 1.5rem; 
+    margin: 0 auto; /* center nav items */
   }
   
   nav ul li a { 
     text-decoration: none; 
     color: var(--text); 
     font-weight: 500; 
-    transition: var(--transition);
+    transition: all 0.3s ease;
     padding: 0.5rem 1rem;
     border-radius: 6px;
     display: flex;
@@ -128,28 +112,6 @@
     gap: 1rem;
   }
 
-  .theme-toggle { 
-    background: var(--secondary); 
-    border: none; 
-    border-radius: 50%; 
-    width: 42px; 
-    height: 42px; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    cursor: pointer; 
-    color: white; 
-    font-size: 1.2rem; 
-    transition: var(--transition);
-    box-shadow: var(--shadow);
-  }
-  
-  .theme-toggle:hover { 
-    background: var(--primary); 
-    transform: rotate(15deg);
-  }
-
-  /* Hero Section */
   .hero { 
     text-align: center; 
     padding: 5rem 2rem; 
@@ -190,7 +152,6 @@
     margin-bottom: 2rem;
   }
 
-  /* Cards Grid */
   .container { 
     display: grid; 
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
@@ -205,7 +166,7 @@
     padding: 2rem; 
     border-radius: 16px; 
     box-shadow: var(--shadow);
-    transition: var(--transition); 
+    transition: all 0.3s ease; 
     cursor: pointer;
     display: flex;
     flex-direction: column;
@@ -246,12 +207,11 @@
     font-size: 1.2rem;
   }
 
-  /* Content Sections */
   .content { 
     padding: 2.5rem; 
     display: none; 
     animation: fadeIn 0.4s ease; 
-    transition: var(--transition);
+    transition: all 0.3s ease;
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
@@ -269,14 +229,10 @@
   .section-header {
     margin-bottom: 2rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
-
-  .dark .section-header {
-    border-bottom: 1px solid rgba(255,255,255,0.1);
   }
 
   .section-header h2 {
@@ -292,7 +248,6 @@
     gap: 0.8rem;
   }
 
-  /* Forms */
   .form-search-container { 
     display: flex; 
     flex-wrap: wrap; 
@@ -320,9 +275,9 @@
     max-width: 300px;
     padding: 0.8rem 1.2rem;
     font-size: 1rem;
-    border: 1px solid #ddd;
+    border: 1px solid #555;
     border-radius: 8px;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     background: var(--card-bg);
     color: var(--text);
   }
@@ -341,14 +296,13 @@
     border-radius: 8px;
     cursor: pointer;
     border: none;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: 0.5rem;
   }
 
-  /* Payment Form */
   #paymentForm {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -364,9 +318,9 @@
   #paymentForm select {
     padding: 0.8rem 1.2rem;
     font-size: 1rem;
-    border: 1px solid #ddd;
+    border: 1px solid #555;
     border-radius: 8px;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     background: var(--card-bg);
     color: var(--text);
   }
@@ -378,7 +332,6 @@
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
   }
 
-  /* Buttons */
   .add-btn-green { 
     background: var(--success); 
     color: #fff; 
@@ -406,7 +359,7 @@
     padding: 0.6rem 1.2rem;
     border-radius: 6px;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -424,7 +377,6 @@
     min-width: 200px;
   }
 
-  /* Tables */
   table { 
     width: 100%; 
     border-collapse: separate;
@@ -450,10 +402,6 @@
   }
 
   table tr:nth-child(even) {
-    background: rgba(0,0,0,0.02);
-  }
-
-  .dark table tr:nth-child(even) {
     background: rgba(255,255,255,0.05);
   }
 
@@ -461,7 +409,6 @@
     background: rgba(52, 152, 219, 0.1);
   }
   
-  /* Total Payment Column Styling - SPECIFIC to payment table */
   #payments table th:last-child,
   #payments table td:last-child {
     text-align: center;
@@ -469,13 +416,11 @@
     font-weight: bold;
   }
   
-  /* Date column styling - ensure dates stay on one line */
   #payments table td:nth-child(4) {
     white-space: nowrap;
     min-width: 120px;
   }
   
-  /* UPDATED: Action buttons with specific colors */
   button.edit-btn { 
     background: var(--warning); 
     color: white; 
@@ -484,7 +429,7 @@
     border-radius: 6px; 
     cursor: pointer; 
     margin-right: 0.5rem;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
@@ -503,7 +448,7 @@
     border-radius: 6px; 
     cursor: pointer; 
     margin-right: 0.5rem;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
@@ -522,7 +467,7 @@
     border-radius: 6px; 
     cursor: pointer; 
     margin-right: 0.5rem;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
@@ -533,28 +478,27 @@
     transform: translateY(-2px);
   }
   
-  /* FIXED: Payment table action buttons - yellow edit, red delete, white text in actions column */
   #payments table th:last-child {
     background: var(--secondary) !important;
-    color: white !important; /* WHITE TEXT */
+    color: white !important;
   }
 
   #payments table .edit-btn {
-    background: var(--warning) !important; /* YELLOW */
+    background: var(--warning) !important;
     color: white !important;
   }
 
   #payments table .delete-btn {
-    background: var(--accent) !important; /* RED */
+    background: var(--accent) !important;
     color: white !important;
   }
 
   #payments table .edit-btn:hover {
-    background: #e67e22 !important; /* Darker yellow on hover */
+    background: #e67e22 !important;
   }
 
   #payments table .delete-btn:hover {
-    background: #c0392b !important; /* Darker red on hover */
+    background: #c0392b !important;
   }
   
   .beneficiaries-list { 
@@ -573,7 +517,6 @@
     margin-top: 0.5rem; 
   }
 
-  /* Payment status indicators */
   .payment-status {
     display: inline-block;
     padding: 0.3rem 0.8rem;
@@ -583,7 +526,7 @@
   }
   
   .status-paid {
-    background-color: rgba(39, 174, 96, 0.15);
+    background-color: rgb(0, 0, 0);
     color: #27ae60;
   }
   
@@ -593,11 +536,11 @@
   }
   
   .status-overdue {
-    background-color: rgba(231, 76, 60, 0.15);
-    color: #e74c3c;
+    background-color: rgb(0, 0, 0);
+    color: var(--danger-red);
+    border: 1px solid rgb(0, 0, 0);
   }
 
-  /* Summary cards */
   .summary-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -613,7 +556,7 @@
     text-align: center;
     position: relative;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s ease;
   }
   
   .summary-card:hover {
@@ -633,7 +576,6 @@
     color: var(--secondary);
   }
   
-  /* Updated: Move Total Collected to right and make it green */
   .summary-card.total {
     text-align: right;
     padding-right: 2rem;
@@ -644,7 +586,6 @@
     font-weight: bold;
   }
 
-  /* Expandable sections */
   .expandable-section {
     margin-bottom: 1.5rem;
     border-radius: 12px;
@@ -659,7 +600,7 @@
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     user-select: none;
   }
   
@@ -688,10 +629,6 @@
   
   .expandable-content-inner {
     padding: 1.5rem;
-    border-top: 1px solid rgba(0,0,0,0.1);
-  }
-  
-  .dark .expandable-content-inner {
     border-top: 1px solid rgba(255,255,255,0.1);
   }
 
@@ -703,28 +640,27 @@
     transform: rotate(180deg);
   }
 
-  /* Reports Action Buttons - FIXED: Made BIG like home buttons */
   .reports-actions {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* BIG like home */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
     margin: 2rem 0;
   }
   
   .report-card {
     background: var(--card-bg);
-    padding: 2.5rem; /* BIG padding like home */
+    padding: 2.5rem;
     border-radius: 16px;
     box-shadow: var(--shadow);
-    transition: var(--transition);
+    transition: all 0.3s ease;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    border-left: 6px solid var(--secondary); /* THICK border */
+    border-left: 6px solid var(--secondary);
     text-align: left;
     height: 100%;
-    min-height: 220px; /* SAME HEIGHT as home cards */
+    min-height: 220px;
   }
   
   .report-card:hover {
@@ -736,7 +672,7 @@
   .report-card h3 {
     color: var(--secondary);
     margin-bottom: 1.2rem;
-    font-size: 1.6rem; /* BIG text */
+    font-size: 1.6rem;
     display: flex;
     align-items: center;
     gap: 0.8rem;
@@ -746,13 +682,13 @@
     color: var(--text-light);
     line-height: 1.7;
     flex-grow: 1;
-    font-size: 1.1rem; /* Slightly larger text */
+    font-size: 1.1rem;
   }
   
   .report-icon {
     background: var(--secondary);
     color: white;
-    width: 60px; /* LARGER icons */
+    width: 60px;
     height: 60px;
     border-radius: 12px;
     display: flex;
@@ -786,12 +722,14 @@
     background: var(--success);
   }
 
-  /* Quick Action Buttons */
   .quick-actions {
     display: flex;
     gap: 1rem;
     margin: 1.5rem 0;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    align-items: center;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
   }
   
   .quick-action-btn {
@@ -801,11 +739,13 @@
     padding: 0.8rem 1.5rem;
     border-radius: 8px;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   
   .quick-action-btn:hover {
@@ -829,25 +769,42 @@
     background: #219653;
   }
 
-  /* Flagged members styling */
+  .report-actions {
+    display: flex;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    flex-wrap: nowrap;
+    align-items: center;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .statement-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: nowrap;
+    align-items: center;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
   .flagged-member {
-    background: rgba(231, 76, 60, 0.1) !important;
+    background: var(--card-bg) !important;
     border-left: 4px solid var(--accent) !important;
   }
   
   .flagged-member td:first-child {
     font-weight: bold;
-    color: var(--accent);
+    color: var(--accent) !important;
   }
 
-  /* Status badges */
   .status-badge {
     display: inline-block;
     padding: 0.3rem 0.8rem;
     border-radius: 20px;
     font-size: 0.85rem;
     font-weight: 500;
-    margin-left: 0.5rem;
   }
   
   .status-flagged {
@@ -855,103 +812,6 @@
     color: #e74c3c;
   }
 
-  /* Reports Tabs */
-  .tabs {
-    display: flex;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-  }
-
-  .dark .tabs {
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-  }
-
-  .tab {
-    padding: 0.8rem 1.5rem;
-    cursor: pointer;
-    font-weight: 500;
-    transition: var(--transition);
-    border-bottom: 3px solid transparent;
-  }
-
-  .tab.active {
-    color: var(--secondary);
-    border-bottom: 3px solid var(--secondary);
-  }
-
-  .tab:hover:not(.active) {
-    background: rgba(52, 152, 219, 0.1);
-  }
-
-  .tab-content {
-    display: none;
-  }
-
-  .tab-content.active {
-    display: block;
-  }
-
-  /* Statement Actions */
-  .statement-actions {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-  }
-
-  /* Email Form */
-  .email-form {
-    background: var(--card-bg);
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    margin-bottom: 1.5rem;
-  }
-
-  .email-form h4 {
-    margin-bottom: 1rem;
-    color: var(--secondary);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .email-form .form-group {
-    margin-bottom: 1rem;
-  }
-
-  .email-form label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .email-form input,
-  .email-form textarea {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: var(--transition);
-    background: var(--card-bg);
-    color: var(--text);
-  }
-
-  .email-form input:focus,
-  .email-form textarea:focus {
-    outline: none;
-    border-color: var(--secondary);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-  }
-
-  .email-form textarea {
-    min-height: 120px;
-    resize: vertical;
-  }
-
-  /* Modals */
   .modal {
     display: none;
     position: fixed; 
@@ -973,15 +833,16 @@
     padding: 2rem; 
     border-radius: 16px; 
     width: 90%;
-    max-width: 600px;
+    max-width: 700px;
     text-align: center; 
     box-shadow: var(--shadow-hover);
     animation: slideUp 0.4s ease;
+    border: 1px solid rgba(255,255,255,0.1);
   }
 
   @keyframes slideUp {
-    from { opacity: 0; transform: translateY(40px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(40px); } 
+    to { opacity: 1; transform: translateY(0); } 
   }
   
   .modal-buttons { 
@@ -997,7 +858,7 @@
     cursor: pointer; 
     font-weight: 600; 
     border: none;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -1005,12 +866,12 @@
   
   .btn-ghost { 
     background: transparent; 
-    border: 1px solid #ddd; 
+    border: 1px solid #555; 
     color: var(--text); 
   }
   
   .btn-ghost:hover {
-    background: rgba(0,0,0,0.05);
+    background: rgba(255,255,255,0.05);
   }
   
   .btn-primary { 
@@ -1053,7 +914,6 @@
     transform: translateY(-2px);
   }
 
-  /* Footer */
   footer {
     background: var(--nav-bg);
     color: var(--text);
@@ -1063,7 +923,6 @@
     box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
   }
 
-  /* Back Button */
   .back-button {
     background: var(--primary);
     color: white;
@@ -1071,7 +930,7 @@
     padding: 0.8rem 1.5rem;
     border-radius: 8px;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
@@ -1084,12 +943,11 @@
     transform: translateY(-2px);
   }
 
-  /* Reports Content Sections */
   .report-content { 
     padding: 2.5rem; 
     display: none; 
     animation: fadeIn 0.4s ease; 
-    transition: var(--transition);
+    transition: all 0.3s ease;
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
@@ -1099,18 +957,13 @@
     display: block; 
   }
   
-  /* Report Header */
   .report-header {
     margin-bottom: 2rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
-
-  .dark .report-header {
-    border-bottom: 1px solid rgba(255,255,255,0.1);
   }
 
   .report-header h2 {
@@ -1121,15 +974,6 @@
     gap: 0.8rem;
   }
 
-  /* Report Actions */
-  .report-actions {
-    display: flex;
-    gap: 1rem;
-    margin: 1.5rem 0;
-    flex-wrap: wrap;
-  }
-
-  /* Report Cards Grid */
   .reports-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -1137,12 +981,11 @@
     padding: 2rem 0;
   }
 
-  /* Report card arrow */
   .report-card-arrow {
     margin-top: 1rem;
     color: var(--text-light);
     font-size: 1.2rem;
-    transition: var(--transition);
+    transition: all 0.3s ease;
   }
 
   .report-card:hover .report-card-arrow {
@@ -1150,17 +993,14 @@
     color: var(--secondary);
   }
 
-  /* Hide tabs in reports since we're using dedicated views now */
   #reports .tabs {
     display: none;
   }
 
-  /* Make sure report contents are properly hidden */
   #reports .tab-content {
     display: none !important;
   }
 
-  /* Custom dropdown styling */
   .custom-select {
     position: relative;
     display: inline-block;
@@ -1186,51 +1026,32 @@
     color: var(--text-light);
   }
 
-  /* Yearly Progress Section */
-  .yearly-progress-section {
-    margin: 3rem 0;
-    padding: 2rem;
-    background: var(--card-bg);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
-    display: none;
-  }
-
-  .yearly-progress-section.active {
-    display: block;
-  }
-
-  .yearly-progress-section h3 {
-    color: var(--secondary);
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-  }
-
   .progress-container {
     margin-bottom: 2rem;
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255,255,255,0.1);
   }
 
   .progress-bar {
-    height: 25px;
-    background-color: #e0e0e0;
-    border-radius: 12px;
+    height: 30px;
+    background-color: #34495e;
+    border-radius: 15px;
     overflow: hidden;
     margin-bottom: 0.5rem;
     position: relative;
-  }
-
-  .dark .progress-bar {
-    background-color: #34495e;
+    border: 2px solid rgba(255,255,255,0.1);
   }
 
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--success), #2ecc71);
-    border-radius: 12px;
+    border-radius: 15px;
     transition: width 0.5s ease;
     position: relative;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
   }
 
   .progress-text {
@@ -1238,6 +1059,7 @@
     justify-content: space-between;
     font-size: 0.9rem;
     color: var(--text-light);
+    margin-top: 0.5rem;
   }
 
   .progress-percentage {
@@ -1247,7 +1069,35 @@
     transform: translate(-50%, -50%);
     font-weight: bold;
     color: white;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    font-size: 0.9rem;
+    z-index: 2;
+    width: 100%;
+    text-align: center;
+  }
+
+  .goal-indicator {
+    position: absolute;
+    top: -25px;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: white;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    white-space: nowrap;
+  }
+
+  .goal-indicator::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--accent);
   }
 
   .yearly-summary {
@@ -1263,6 +1113,12 @@
     border-radius: 12px;
     box-shadow: var(--shadow);
     text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .yearly-stat:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
   }
 
   .yearly-stat h4 {
@@ -1277,7 +1133,113 @@
     color: var(--secondary);
   }
 
-  /* Fix action buttons alignment */
+  .yearly-stat.goal .amount {
+    color: var(--warning) !important;
+  }
+
+  .yearly-stat.progress .amount {
+    color: var(--success);
+  }
+
+  .percentage-cell {
+    position: relative;
+    min-width: 120px;
+  }
+
+  .percentage-bar-container {
+    width: 100%;
+    height: 20px;
+    background-color: #34495e;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 5px;
+  }
+
+  .monthly-bar-1 { background-color: rgba(52, 152, 219, 0.95) !important; }
+  .monthly-bar-2 { background-color: rgba(46, 204, 113, 0.95) !important; }
+  .monthly-bar-3 { background-color: rgba(155, 89, 182, 0.95) !important; }
+  .monthly-bar-4 { background-color: rgba(241, 196, 15, 0.95) !important; }
+  .monthly-bar-5 { background-color: rgba(230, 126, 34, 0.95) !important; }
+  .monthly-bar-6 { background-color: rgba(231, 76, 60, 0.95) !important; }
+  .monthly-bar-7 { background-color: rgba(149, 165, 166, 0.95) !important; }
+  .monthly-bar-8 { background-color: rgba(52, 73, 94, 0.95) !important; }
+  .monthly-bar-9 { background-color: rgba(22, 160, 133, 0.95) !important; }
+  .monthly-bar-10 { background-color: rgba(39, 174, 96, 0.95) !important; }
+  .monthly-bar-11 { background-color: rgba(142, 68, 173, 0.95) !important; }
+  .monthly-bar-12 { background-color: rgba(243, 156, 18, 0.95) !important; }
+
+  .percentage-bar {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+    position: relative;
+    /* stronger contrast and subtle gradient for better visibility */
+    box-shadow: inset 0 -4px 8px rgba(0,0,0,0.35);
+    background-image: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(0,0,0,0.08));
+  }
+
+  .percentage-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+    font-size: 0.9rem;
+    z-index: 2;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Make the percentage indicator more visible when bar is small: add a thin border and contrasting overlay */
+  .percentage-bar::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: rgba(255,255,255,0.06);
+    pointer-events: none;
+  }
+
+  /* Performance toggle buttons - more pronounced clickable buttons */
+  .performance-toggle { display:flex; gap:0.6rem; margin:0.6rem 0; }
+  .performance-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.06);
+    color: var(--text);
+    padding: 0.6rem 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: all 0.18s ease;
+    font-weight: 700;
+    box-shadow: none;
+  }
+  .performance-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+  .performance-btn.active {
+    background: linear-gradient(90deg, var(--secondary), #2b79a8);
+    border-color: transparent;
+    color: white;
+  }
+
+  /* Make delete buttons clearly red where .btn-delete or .btn.btn-red are used */
+  .btn.btn-red, .btn-delete, .delete-btn {
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 14px rgba(231,76,60,0.25);
+  }
+
+  .percentage-value {
+    display: none;
+  }
+
   #members table td:last-child {
     white-space: nowrap;
   }
@@ -1290,12 +1252,10 @@
     font-size: 0.85rem;
   }
 
-  /* Ensure buttons stay on one line */
   #members table tr td:last-child {
     min-width: 280px;
   }
 
-  /* Toast notifications */
   .toast {
     position: fixed;
     top: 100px;
@@ -1325,7 +1285,600 @@
     background: var(--warning);
   }
 
-  /* Responsive */
+  .members-collect-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+  }
+  
+  .collect-card {
+    background: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border-left: 6px solid var(--secondary);
+    text-align: left;
+    height: 100%;
+    min-height: 220px;
+  }
+  
+  .collect-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+    border-left: 6px solid var(--accent);
+  }
+  
+  .collect-card h3 {
+    color: var(--secondary);
+    margin-bottom: 1.2rem;
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  
+  .collect-card p {
+    color: var(--text-light);
+    line-height: 1.7;
+    flex-grow: 1;
+    font-size: 1.1rem;
+  }
+  
+  .collect-icon {
+    background: var(--secondary);
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.2rem;
+    font-size: 1.4rem;
+  }
+  
+  .collect-card.warning {
+    border-left: 6px solid var(--warning);
+  }
+  
+  .collect-card.warning .collect-icon {
+    background: var(--warning);
+  }
+  
+  .collect-card.success {
+    border-left: 6px solid var(--success);
+  }
+  
+  .collect-card.success .collect-icon {
+    background: var(--success);
+  }
+
+  .transport-tabs {
+    display: flex;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .transport-tab {
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+  }
+
+  .transport-tab.active {
+    color: var(--secondary);
+    border-bottom: 3px solid var(--secondary);
+  }
+
+  .transport-tab:hover:not(.active) {
+    background: rgba(52, 152, 219, 0.1);
+  }
+
+  .transport-tab-content {
+    display: none;
+  }
+
+  .transport-tab-content.active {
+    display: block;
+  }
+
+  /* Enhanced Attendance Styles */
+  .attendance-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+  }
+
+  .attendance-month-selector {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .date-picker-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.9rem;
+    justify-content: center;
+  }
+
+  #attendanceDate {
+    padding: 0.6rem 0.9rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: var(--card-bg);
+    color: var(--text);
+    box-shadow: var(--shadow);
+    width: 140px; /* match save button width visually */
+    min-height: 40px; /* match button height */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Ensure Save button matches height visually */
+  #saveAttendance{min-height:40px;padding:.6rem .9rem}
+
+  .month-year-group {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+
+  .attendance-month-selector select {
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: var(--primary);
+    color: var(--text);
+    box-shadow: var(--shadow);
+    min-width: 120px;
+  }
+
+  .attendance-list {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+  .attendance-member {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+  }
+
+  .attendance-member:hover {
+    background: rgba(52, 152, 219, 0.05);
+    transform: translateX(5px);
+  }
+
+  .attendance-member:last-child {
+    border-bottom: none;
+  }
+
+  .attendance-member input[type="checkbox"] {
+    margin-right: 1rem;
+    transform: scale(1.3);
+    accent-color: var(--success);
+  }
+
+  .attendance-member label {
+    font-weight: 500;
+    cursor: pointer;
+    flex-grow: 1;
+  }
+
+  .attendance-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .attendance-stat {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .attendance-stat:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .attendance-stat h4 {
+    font-size: 1rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+  }
+
+  /* Highlight attendance rate in green */
+  .attendance-rate-value {
+    background: linear-gradient(90deg, rgba(39,174,96,0.12), rgba(46,204,113,0.12));
+    color: var(--success);
+    font-weight: 800;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    display: inline-block;
+    min-width: 64px;
+    text-align: center;
+    box-shadow: inset 0 -2px 6px rgba(0,0,0,0.08);
+  }
+
+  .attendance-stat .value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--secondary);
+  }
+
+  .attendance-stat.present .value {
+    color: var(--success);
+  }
+
+  .attendance-stat.absent .value {
+    color: var(--accent);
+  }
+
+  .attendance-stat.rate .value {
+    color: var(--warning);
+  }
+
+  /* Payment Search */
+  .payment-search-container {
+    margin-bottom: 1.5rem;
+  }
+
+  #paymentSearch {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    border: 1px solid #555;
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text);
+  }
+
+  /* Transport Breakdown */
+  .breakdown-section {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+  }
+
+  .breakdown-section h3 {
+    color: var(--secondary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Enhanced Members Performance Styles */
+  .performance-toggle {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    justify-content: center;
+  }
+
+  .performance-btn {
+    padding: 1.2rem 2rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex: 1;
+    justify-content: center;
+    max-width: 400px;
+    font-size: 1.2rem;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .performance-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: all 0.5s ease;
+  }
+
+  .performance-btn:hover::before {
+    left: 100%;
+  }
+
+  .performance-btn.active {
+    background: var(--secondary);
+    color: white;
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .performance-btn:not(.active) {
+    background: var(--primary);
+    color: var(--text);
+  }
+
+  .performance-btn:not(.active):hover {
+    background: #1e2a38;
+    transform: translateY(-3px);
+  }
+
+  .performance-view-container {
+    display: none;
+  }
+
+  .performance-view-container.active {
+    display: block;
+  }
+
+  .member-performance-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--secondary);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .member-performance-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .member-performance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .member-performance-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--secondary);
+  }
+
+  .member-performance-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .performance-stat {
+    text-align: center;
+  }
+
+  .performance-stat .label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 0.3rem;
+  }
+
+  .performance-stat .value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .performance-stat.payments .value {
+    color: var(--success);
+  }
+
+  .performance-stat.fines .value {
+    color: var(--warning);
+  }
+
+  .performance-stat.attendance .value {
+    color: var(--secondary);
+  }
+
+  /* NEW: Enhanced Member Performance Styles */
+  .member-goal-indicator {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .yearly-view-search {
+    margin-bottom: 1.5rem;
+  }
+
+  #yearlyMemberSearch {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    border: 1px solid #555;
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text);
+  }
+
+  /* Attendance Breakdown Styles */
+  .attendance-breakdown {
+    margin-top: 2rem;
+  }
+
+  .attendance-breakdown-tabs {
+    display: flex;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .attendance-breakdown-tab {
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+  }
+
+  .attendance-breakdown-tab.active {
+    color: var(--secondary);
+    border-bottom: 3px solid var(--secondary);
+  }
+
+  .attendance-breakdown-tab:hover:not(.active) {
+    background: rgba(52, 152, 219, 0.1);
+  }
+
+  .attendance-breakdown-content {
+    display: none;
+  }
+
+  .attendance-breakdown-content.active {
+    display: block;
+  }
+
+  .attendance-member-present {
+    border-left: 4px solid var(--success);
+  }
+
+  .attendance-member-absent {
+    border-left: 4px solid var(--accent);
+  }
+
+  /* NEW: Added search box for attendance */
+  .attendance-search-container {
+    margin-bottom: 1.5rem;
+  }
+
+  #attendanceSearch {
+    width: 100%;
+    max-width: 400px;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    border: 1px solid #555;
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text);
+  }
+
+  /* NEW: Enhanced Organizational Performance Styles */
+  .organizational-performance-container {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+  }
+
+  .organizational-performance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .organizational-performance-header h3 {
+    color: var(--secondary);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .monthly-goal-container {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .monthly-goal-container h4 {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+  }
+
+  .monthly-breakdown-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .monthly-breakdown-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .monthly-breakdown-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow);
+  }
+
+  .monthly-breakdown-card h5 {
+    color: var(--secondary);
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  .monthly-breakdown-card .amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .monthly-breakdown-card .percentage {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+  }
+
   @media (max-width: 980px){
     .container {
       grid-template-columns: 1fr;
@@ -1370,12 +1923,35 @@
       justify-content: flex-start;
     }
 
-    .statement-actions {
-      flex-direction: column;
-    }
-
     .reports-actions {
       grid-template-columns: 1fr;
+    }
+    
+    .report-actions,
+    .quick-actions,
+    .statement-actions {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 1rem;
+    }
+    
+    .quick-action-btn {
+      flex-shrink: 0;
+    }
+    
+    .members-collect-cards {
+      grid-template-columns: 1fr;
+    }
+
+    .performance-toggle {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .performance-btn {
+      max-width: 100%;
+      padding: 1rem 1.5rem;
+      font-size: 1.1rem;
     }
   }
 
@@ -1402,7 +1978,6 @@
       flex-direction: column;
     }
     
-    /* Adjust summary cards for mobile */
     .summary-cards {
       grid-template-columns: 1fr;
     }
@@ -1412,21 +1987,43 @@
       padding-right: 1.5rem;
     }
     
-    /* Make table scrollable on mobile */
     .content table {
       display: block;
       overflow-x: auto;
       white-space: nowrap;
     }
     
-    /* Ensure dates stay on one line on mobile */
     #payments table td:nth-child(4) {
       white-space: nowrap;
     }
+    
+    .report-actions,
+    .quick-actions,
+    .statement-actions {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+    }
+
+    .member-performance-stats {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .attendance-breakdown-tabs {
+      flex-direction: column;
+    }
+
+    .attendance-breakdown-tab {
+      text-align: center;
+    }
+
+    .monthly-breakdown-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
+<link rel="stylesheet" href="styles/ui-theme.css">
 </head>
-<body>
+<body class="dark">
 <div class="app-container">
   <nav>
     <div class="logo-container" id="logoContainer">
@@ -1435,12 +2032,10 @@
     <ul>
       <li><a href="#" data-section="home"><i class="fas fa-home"></i> Home</a></li>
       <li><a href="#" data-section="members"><i class="fas fa-users"></i> Members</a></li>
+      <li><a href="#" data-section="attendance"><i class="fas fa-calendar-check"></i> Attendance</a></li>
       <li><a href="#" data-section="payments"><i class="fas fa-money-bill-wave"></i> Payments</a></li>
       <li><a href="#" data-section="reports"><i class="fas fa-chart-bar"></i> Reports</a></li>
     </ul>
-    <div class="nav-right">
-      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
-    </div>
   </nav>
 
   <section class="hero" id="homeSection">
@@ -1460,6 +2055,11 @@
       <div class="card-icon"><i class="fas fa-credit-card"></i></div>
       <h3>Payment Tracking</h3>
       <p>Track fees, contributions, and allocate payments with detailed reporting.</p>
+    </div>
+    <div class="card" data-section="attendance">
+      <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
+      <h3>Attendance Tracking</h3>
+      <p>Record and monitor member attendance for meetings and events.</p>
     </div>
     <div class="card" data-section="reports">
       <div class="card-icon"><i class="fas fa-chart-pie"></i></div>
@@ -1522,14 +2122,20 @@
     <div class="section-header">
       <h2><i class="fas fa-money-bill-wave"></i> Payment Management</h2>
       <div class="export-buttons">
+        <button class="export-btn" id="exportPaymentsPDF">
+          <i class="fas fa-file-pdf"></i> Export PDF
+        </button>
         <button class="export-btn" id="exportPaymentsExcel">
-          <i class="fas fa-file-excel"></i> Export to Excel
+          <i class="fas fa-file-excel"></i> Export Excel
         </button>
       </div>
     </div>
     <p class="small-muted">Record and track member payments, fines, and other contributions.</p>
     
-    <!-- Summary Cards -->
+    <div class="payment-search-container">
+      <input type="text" id="paymentSearch" placeholder="Search payments by member name...">
+    </div>
+    
     <div class="summary-cards">
       <div class="summary-card" id="monthlyCollectionsCard">
         <h3>Monthly Collections</h3>
@@ -1549,7 +2155,6 @@
       </div>
     </div>
     
-    <!-- Expandable Details -->
     <div class="expandable-section" id="paymentDetailsSection">
       <div class="expandable-header">
         <h3><i class="fas fa-receipt"></i> Payment Details</h3>
@@ -1557,7 +2162,6 @@
       </div>
       <div class="expandable-content">
         <div class="expandable-content-inner">
-          <!-- Payment Form -->
           <form id="paymentForm">
             <select id="paymentMember" required>
               <option value="">Select Member</option>
@@ -1578,13 +2182,14 @@
               <option value="Misconduct">Misconduct</option>
               <option value="Other">Other</option>
             </select>
-            <input type="number" id="fineAmount" placeholder="Fine Amount" step="0.01">
+            <input type="number" id="fineAmount" placeholder="Fine Amount (leave empty for due)" step="0.01">
             <div class="custom-select">
-              <select id="transport" placeholder="Transport Money" step="0.01">
+              <select id="transport">
                 <option value="">Select Transport Payment</option>
                 <option value="20">R20 Transport Fee</option>
               </select>
             </div>
+            <input type="text" id="funeralFor" placeholder="Funeral For (Name of deceased)" style="display: none;">
             <button type="button" id="transportPaymentBtn" class="btn btn-primary">
               <i class="fas fa-bus"></i> Add Transport Payment
             </button>
@@ -1593,7 +2198,6 @@
             </button>
           </form>
           
-          <!-- Payment Table -->
           <table>
             <thead>
               <tr>
@@ -1616,6 +2220,68 @@
     </div>
   </div>
 
+  <div class="content" id="attendance">
+    <button class="back-button" id="backToHomeFromAttendance">
+      <i class="fas fa-arrow-left"></i> Back to Home
+    </button>
+    <div class="section-header">
+      <h2><i class="fas fa-calendar-check"></i> Attendance Tracking</h2>
+      <div class="export-buttons">
+        <button class="export-btn" id="exportAttendancePDF">
+          <i class="fas fa-file-pdf"></i> Export PDF
+        </button>
+        <button class="export-btn" id="exportAttendanceExcel">
+          <i class="fas fa-file-excel"></i> Export Excel
+        </button>
+      </div>
+    </div>
+    <p class="small-muted">Record and track member attendance for meetings and events.</p>
+    
+    <!-- NEW: Added search box for attendance -->
+    <div class="attendance-search-container">
+      <input type="text" id="attendanceSearch" placeholder="Search members by name or member number...">
+    </div>
+    
+    <div class="attendance-controls">
+      <div class="attendance-month-selector">
+        <!-- Modern date picker (optional). If empty, code will default to today -->
+        <div class="date-picker-wrapper">
+          <label for="attendanceDate" class="small-muted">Date (optional)</label>
+          <input type="date" id="attendanceDate" />
+        </div>
+
+        <!-- Month/Year selects removed: use the date picker above -->
+
+        <button class="btn btn-primary" id="saveAttendance">
+          <i class="fas fa-save"></i> Save Attendance
+        </button>
+      </div>
+    </div>
+    
+    <div class="attendance-stats">
+      <div class="attendance-stat present">
+        <h4>Present Today</h4>
+        <div class="value" id="presentCount">0</div>
+      </div>
+      <div class="attendance-stat absent">
+        <h4>Absent Today</h4>
+        <div class="value" id="absentCount">0</div>
+      </div>
+      <div class="attendance-stat rate">
+        <h4>Attendance Rate</h4>
+        <div class="value attendance-rate-value" id="attendanceRate">0%</div>
+      </div>
+      <div class="attendance-stat">
+        <h4>Total Members</h4>
+        <div class="value" id="totalMembersCount">0</div>
+      </div>
+    </div>
+    
+    <div class="attendance-list" id="attendanceList">
+      <!-- Attendance list will be populated by JavaScript -->
+    </div>
+  </div>
+
   <div class="content" id="reports">
     <button class="back-button" id="backToHomeFromReports">
       <i class="fas fa-arrow-left"></i> Back to Home
@@ -1633,7 +2299,6 @@
     </div>
     <p class="small-muted">Generate summaries of income, expenses, and membership statistics.</p>
     
-    <!-- Reports Grid -->
     <div class="reports-grid" id="reportsDashboard">
       <div class="report-card" data-report="statements">
         <div class="report-icon">
@@ -1678,9 +2343,20 @@
           <i class="fas fa-arrow-right"></i>
         </div>
       </div>
+      
+      <div class="report-card success" data-report="attendance">
+        <div class="report-icon">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <h3>Attendance Records</h3>
+        <p>View and analyze member attendance patterns and generate attendance reports.</p>
+        <div class="report-card-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
     </div>
 
-    <!-- Individual Report Views -->
+    <!-- Updated Members Collect Section -->
     <div class="report-content" id="statementsReport">
       <button class="back-button" id="backToReportsFromStatements">
         <i class="fas fa-arrow-left"></i> Back to Reports
@@ -1697,22 +2373,67 @@
         </div>
       </div>
 
-      <div class="report-actions">
-        <button class="quick-action-btn" id="generateAllStatements">
-          <i class="fas fa-sync"></i> Generate All Statements
-        </button>
-        <button class="quick-action-btn success" id="monthlyStatementBtn">
-          <i class="fas fa-file-alt"></i> Monthly Statement
-        </button>
-        <button class="quick-action-btn warning" id="yearlyProgressBtn">
-          <i class="fas fa-calendar-alt"></i> Yearly Progress
-        </button>
+      <div class="members-collect-cards">
+        <div class="collect-card" id="monthlyCollectionsView">
+          <div class="collect-icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <h3>Monthly Collections</h3>
+          <p>View detailed monthly payment collections with breakdown by member and payment type.</p>
+        </div>
+        
+        <div class="collect-card success" id="yearlyView">
+          <div class="collect-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h3>Yearly View</h3>
+          <p>Analyze yearly payment trends and performance with comprehensive visual reports.</p>
+        </div>
       </div>
 
       <div id="statementsContainer"></div>
     </div>
 
-    <!-- Fines Management Report -->
+    <!-- New Monthly Collections Page -->
+    <div class="report-content" id="monthlyCollectionsPage">
+      <button class="back-button" id="backToStatementsFromMonthly">
+        <i class="fas fa-arrow-left"></i> Back to Members Collect
+      </button>
+      <div class="report-header">
+        <h2><i class="fas fa-calendar-alt"></i> Monthly Collections</h2>
+        <div class="export-buttons">
+          <button class="export-btn" id="exportMonthlyPDF">
+            <i class="fas fa-file-pdf"></i> Export PDF
+          </button>
+          <button class="export-btn" id="exportMonthlyExcel">
+            <i class="fas fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+      </div>
+
+      <div id="monthlyCollectionsContainer"></div>
+    </div>
+
+    <!-- New Yearly View Page -->
+    <div class="report-content" id="yearlyViewPage">
+      <button class="back-button" id="backToStatementsFromYearly">
+        <i class="fas fa-arrow-left"></i> Back to Members Collect
+      </button>
+      <div class="report-header">
+        <h2><i class="fas fa-chart-line"></i> Yearly View</h2>
+        <div class="export-buttons">
+          <button class="export-btn" id="exportYearlyPDF">
+            <i class="fas fa-file-pdf"></i> Export PDF
+          </button>
+          <button class="export-btn" id="exportYearlyExcel">
+            <i class="fas fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+      </div>
+
+      <div id="yearlyViewContainer"></div>
+    </div>
+
     <div class="report-content" id="finesReport">
       <button class="back-button" id="backToReportsFromFines">
         <i class="fas fa-arrow-left"></i> Back to Reports
@@ -1738,7 +2459,6 @@
       <div id="finesContainer"></div>
     </div>
 
-    <!-- Red Flagged Members Report -->
     <div class="report-content" id="redflagsReport">
       <button class="back-button" id="backToReportsFromRedflags">
         <i class="fas fa-arrow-left"></i> Back to Reports
@@ -1764,7 +2484,6 @@
       <div id="redFlagContainer"></div>
     </div>
 
-    <!-- Transport Collection Report -->
     <div class="report-content" id="transportReport">
       <button class="back-button" id="backToReportsFromTransport">
         <i class="fas fa-arrow-left"></i> Back to Reports
@@ -1788,14 +2507,55 @@
         <button class="quick-action-btn warning" id="generateTransportReport">
           <i class="fas fa-sync"></i> Refresh Transport Report
         </button>
+        <button class="quick-action-btn primary" id="transportBreakdown">
+          <i class="fas fa-chart-pie"></i> Transport Breakdown
+        </button>
       </div>
 
-      <div id="transportContainer"></div>
+      <div class="transport-tabs">
+        <div class="transport-tab active" data-tab="due">Due Payments</div>
+        <div class="transport-tab" data-tab="paid">Paid Payments</div>
+      </div>
+
+      <div class="transport-tab-content active" id="transportDueTab">
+        <div id="transportDueContainer"></div>
+      </div>
+
+      <div class="transport-tab-content" id="transportPaidTab">
+        <div id="transportPaidContainer"></div>
+      </div>
+      
+      <div id="transportBreakdownContainer"></div>
+    </div>
+
+    <div class="report-content" id="attendanceReport">
+      <button class="back-button" id="backToReportsFromAttendance">
+        <i class="fas fa-arrow-left"></i> Back to Reports
+      </button>
+      <div class="report-header">
+        <h2><i class="fas fa-calendar-check"></i> Attendance Records</h2>
+        <div class="export-buttons">
+          <button class="export-btn" id="exportAttendanceReportPDF">
+            <i class="fas fa-file-pdf"></i> Export PDF
+          </button>
+          <button class="export-btn" id="exportAttendanceReportExcel">
+            <i class="fas fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="report-actions">
+        <button class="quick-action-btn primary" id="generateAttendanceReport">
+          <i class="fas fa-sync"></i> Generate Attendance Report
+        </button>
+      </div>
+
+      <div id="attendanceReportContainer"></div>
     </div>
     
   </div>
 
-  <!-- Modals -->
+  <!-- All modals remain the same as in original code -->
   <div id="deleteModal" class="modal">
     <div class="modal-content">
       <h3><i class="fas fa-exclamation-circle"></i> Confirm Deletion</h3>
@@ -1822,7 +2582,11 @@
   <div id="addBenModal" class="modal">
     <div class="modal-content">
       <h3><i class="fas fa-user-plus"></i> Add Beneficiary</h3>
-      <div id="addBenContainer" style="display:flex;flex-direction:column;gap:0.8rem;margin-top:1rem;"></div>
+      <div id="addBenContainer" style="display:flex;flex-direction:column;gap:0.8rem;margin-top:1rem;">
+        <input type="text" id="beneficiaryName" placeholder="Beneficiary Full Name" class="modal-input">
+        <input type="text" id="beneficiaryId" placeholder="Beneficiary ID Number" class="modal-input">
+        <input type="text" id="beneficiaryRelationship" placeholder="Relationship to Member" class="modal-input">
+      </div>
       <div style="display:flex;gap:0.8rem;justify-content:center;margin-top:1.5rem;">
         <button id="addBenSave" class="btn btn-green"><i class="fas fa-save"></i> Add Beneficiary</button>
         <button id="addBenCancel" class="btn btn-ghost"><i class="fas fa-times"></i> Cancel</button>
@@ -1842,17 +2606,78 @@
     </div>
   </div>
 
+  <div id="paymentEditModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-edit"></i> Edit Payment</h3>
+      <form id="editPaymentForm" style="display:flex;flex-direction:column;gap:1rem;margin-top:1.5rem;">
+        <input type="date" id="editPaymentDate" required class="modal-input">
+        <input type="number" id="editMonthlyCollection" placeholder="Monthly Collection" step="0.01" class="modal-input">
+        <select id="editDressCode" class="modal-input">
+          <option value="">Select Dress Code</option>
+          <option value="Jacket">Jacket</option>
+          <option value="Shirt">Shirt</option>
+          <option value="Other">Other</option>
+        </select>
+        <select id="editFineType" class="modal-input">
+          <option value="">Select Fine Type</option>
+          <option value="Late Coming">Late Coming</option>
+          <option value="Swearing">Swearing</option>
+          <option value="Absence">Absence</option>
+          <option value="Misconduct">Misconduct</option>
+          <option value="Other">Other</option>
+        </select>
+        <input type="number" id="editFineAmount" placeholder="Fine Amount (leave empty for due)" step="0.01" class="modal-input">
+        <div class="custom-select">
+          <select id="editTransport" class="modal-input">
+            <option value="">Select Transport Payment</option>
+            <option value="20">R20 Transport Fee</option>
+          </select>
+        </div>
+        <input type="text" id="editFuneralFor" placeholder="Funeral For (Name of deceased)" style="display: none;" class="modal-input">
+      </form>
+      <div class="modal-buttons">
+        <button id="savePaymentEdit" class="btn btn-green"><i class="fas fa-save"></i> Save Changes</button>
+        <button id="cancelPaymentEdit" class="btn btn-ghost"><i class="fas fa-times"></i> Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="paymentDeleteModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-exclamation-circle"></i> Confirm Payment Deletion</h3>
+      <p>Are you sure you want to delete this payment? This action cannot be undone.</p>
+      <div class="modal-buttons">
+        <button id="confirmPaymentDelete" class="btn btn-red"><i class="fas fa-check"></i> Yes, Delete</button>
+        <button id="cancelPaymentDelete" class="btn btn-ghost"><i class="fas fa-times"></i> Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="editMemberModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-user-edit"></i> Edit Member</h3>
+      <form id="editMemberForm" style="display:flex;flex-direction:column;gap:1rem;margin-top:1.5rem;">
+        <input type="text" id="editMemberNumber" placeholder="Member Number" class="modal-input">
+        <input type="text" id="editName" placeholder="Full Name" required class="modal-input">
+        <input type="text" id="editIdNumber" placeholder="ID Number" required class="modal-input">
+        <input type="text" id="editPhone" placeholder="Phone Number" required class="modal-input">
+      </form>
+      <div class="modal-buttons">
+        <button id="saveMemberEdit" class="btn btn-green"><i class="fas fa-save"></i> Save Changes</button>
+        <button id="cancelMemberEdit" class="btn btn-ghost"><i class="fas fa-times"></i> Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <footer>
-    <p>&copy; 2025 Tshilapfene Burial Society. All rights reserved.</p>
+    <p>Impowered By Lifhasi Technologies.</p>
   </footer>
 </div>
 
-<!-- Toast Notification -->
 <div id="toast" class="toast"></div>
 
 <script>
 // DOM Elements and Data
-const toggleBtn = document.getElementById("themeToggle");
 const navLinks = document.querySelectorAll("nav ul li a, .card");
 const sections = document.querySelectorAll(".content");
 const homeHero = document.getElementById("homeSection");
@@ -1867,13 +2692,39 @@ const paymentMemberSelect = document.getElementById("paymentMember");
 const exportPaymentsExcelBtn = document.getElementById("exportPaymentsExcel");
 const exportExcelBtn = document.getElementById("exportExcel");
 const toast = document.getElementById("toast");
+const transportPaymentBtn = document.getElementById("transportPaymentBtn");
+const funeralForInput = document.getElementById("funeralFor");
+const paymentSearch = document.getElementById("paymentSearch");
+
+// NEW: Elements for new features
+const monthlyCollectionsView = document.getElementById("monthlyCollectionsView");
+const yearlyView = document.getElementById("yearlyView");
+const chargeTransportFeeBtn = document.getElementById("chargeTransportFee");
+const generateTransportReportBtn = document.getElementById("generateTransportReport");
+const generateRedFlagReportBtn = document.getElementById("generateRedFlagReport");
+const transportBreakdownBtn = document.getElementById("transportBreakdown");
+
+// Attendance Elements (date-driven)
+const attendanceDateInput = document.getElementById('attendanceDate');
+const saveAttendanceBtn = document.getElementById("saveAttendance");
+const attendanceList = document.getElementById("attendanceList");
+const totalMembersCount = document.getElementById("totalMembersCount");
+const presentCount = document.getElementById("presentCount");
+const absentCount = document.getElementById("absentCount");
+const attendanceRate = document.getElementById("attendanceRate");
+
+// NEW: Attendance search element
+const attendanceSearch = document.getElementById("attendanceSearch");
 
 // Data
 let members = JSON.parse(localStorage.getItem("members")) || [];
 let payments = JSON.parse(localStorage.getItem("payments")) || [];
+let attendance = JSON.parse(localStorage.getItem("attendance")) || {};
 let editIndex = -1;
 let deleteIndex = null;
 let currentMemberIndex = null;
+let editPaymentIndex = null;
+let deletePaymentIndex = null;
 
 // Initialize with sample data if empty
 if (members.length === 0) {
@@ -1887,9 +2738,9 @@ if (members.length === 0) {
 
 if (payments.length === 0) {
   payments = [
-    { bookNo: 1, name: "John", surname: "Doe", date: "2025-01-15", monthlyCollection: 100, dressCode: "Jacket", fines: "Late Coming (R30.00) - Paid", transport: 20, totalPayment: 900 },
-    { bookNo: 2, name: "Jane", surname: "Smith", date: "2025-01-16", monthlyCollection: 100, dressCode: "Shirt", fines: "Swearing - Due", transport: 20, totalPayment: 620 },
-    { bookNo: 3, name: "Robert", surname: "Brown", date: "2025-01-17", monthlyCollection: 100, dressCode: "", fines: "Absence (R50.00) - Paid", transport: 0, totalPayment: 150 }
+    { bookNo: 1, name: "John", surname: "Doe", date: "2025-01-15", monthlyCollection: 100, dressCode: "Jacket", fines: "Late Coming (R30.00) - Paid", transport: 20, totalPayment: 900, funeralFor: "" },
+    { bookNo: 2, name: "Jane", surname: "Smith", date: "2025-01-16", monthlyCollection: 100, dressCode: "Shirt", fines: "Swearing - Due", transport: 20, totalPayment: 620, funeralFor: "" },
+    { bookNo: 3, name: "Robert", surname: "Brown", date: "2025-01-17", monthlyCollection: 100, dressCode: "", fines: "Absence (R50.00) - Paid", transport: 0, totalPayment: 150, funeralFor: "" }
   ];
   savePayments();
 }
@@ -1908,11 +2759,21 @@ function escHtml(str=''){
 }
 
 function saveMembers(){ 
+  // Sort members by member number before saving
+  members.sort((a, b) => {
+    const numA = parseInt(a.memberNumber) || 0;
+    const numB = parseInt(b.memberNumber) || 0;
+    return numA - numB;
+  });
   localStorage.setItem('members', JSON.stringify(members)); 
 }
 
 function savePayments(){ 
   localStorage.setItem('payments', JSON.stringify(payments)); 
+}
+
+function saveAttendance() {
+  localStorage.setItem('attendance', JSON.stringify(attendance));
 }
 
 function formatCurrency(amount) {
@@ -1957,15 +2818,1692 @@ function extractAmountFromString(str) {
   return 0;
 }
 
-// Render Members
+// NEW: Check if member hasn't paid in 6 months
+function checkRedFlagMembers() {
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  
+  const redFlagMembers = members.map(member => {
+    // Find payments for this member. Prefer an explicit memberId, fall back to name matching.
+    const memberPayments = payments.filter(payment => {
+      // If payment has a memberId, use it (robust even if names change)
+      if (payment.memberId !== undefined && payment.memberId !== null) {
+        return Number(payment.memberId) === members.indexOf(member);
+      }
+
+      // Otherwise fall back to normalized full-name comparison (case-insensitive)
+      const paymentFullName = `${(payment.name || '').trim()} ${(payment.surname || '').trim()}`.replace(/\s+/g, ' ').trim().toLowerCase();
+      const memberFullName = (member.name || '').trim().replace(/\s+/g, ' ').toLowerCase();
+      return paymentFullName === memberFullName;
+    })
+    // Keep only payments with valid dates
+    .filter(p => p && p.date && !isNaN(new Date(p.date)));
+
+    if (memberPayments.length === 0) {
+      // No valid payments -> flagged
+      return { ...member, isRedFlagged: true, lastPayment: null };
+    }
+
+    // Sort payments by date (newest first) using valid dates
+    memberPayments.sort((a, b) => new Date(b.date) - new Date(a.date));
+    const lastPaymentDate = new Date(memberPayments[0].date);
+
+    return {
+      ...member,
+      isRedFlagged: lastPaymentDate < sixMonthsAgo,
+      lastPayment: lastPaymentDate
+    };
+  });
+  
+  return redFlagMembers.filter(member => member.isRedFlagged);
+}
+
+// NEW: Generate monthly collections report
+function generateMonthlyCollectionsReport() {
+  const monthlyCollectionsContainer = document.getElementById('monthlyCollectionsContainer');
+  monthlyCollectionsContainer.innerHTML = '';
+  
+  // Group payments by month
+  const monthlyData = {};
+  
+  payments.forEach(payment => {
+    const paymentDate = new Date(payment.date);
+    const monthYear = `${paymentDate.getFullYear()}-${(paymentDate.getMonth() + 1).toString().padStart(2, '0')}`;
+    
+    if (!monthlyData[monthYear]) {
+      monthlyData[monthYear] = {
+        month: paymentDate.toLocaleString('default', { month: 'long', year: 'numeric' }),
+        totalCollections: 0,
+        totalFines: 0,
+        totalTransport: 0,
+        memberCount: 0,
+        payments: []
+      };
+    }
+    
+    monthlyData[monthYear].totalCollections += parseFloat(payment.monthlyCollection || 0);
+    monthlyData[monthYear].totalFines += extractAmountFromString(payment.fines);
+    monthlyData[monthYear].totalTransport += parseFloat(payment.transport || 0);
+    monthlyData[monthYear].memberCount++;
+    monthlyData[monthYear].payments.push(payment);
+  });
+  
+  // Create monthly summary cards
+  const monthlySummary = document.createElement('div');
+  monthlySummary.className = 'summary-cards';
+  monthlySummary.innerHTML = `
+    <div class="summary-card">
+      <h3>Total Months</h3>
+      <div class="amount">${Object.keys(monthlyData).length}</div>
+    </div>
+    <div class="summary-card">
+      <h3>Total Collections</h3>
+      <div class="amount">${formatCurrency(Object.values(monthlyData).reduce((sum, month) => sum + month.totalCollections, 0))}</div>
+    </div>
+    <div class="summary-card total">
+      <h3>Total Revenue</h3>
+      <div class="amount">${formatCurrency(Object.values(monthlyData).reduce((sum, month) => sum + month.totalCollections + month.totalFines + month.totalTransport, 0))}</div>
+    </div>
+  `;
+  monthlyCollectionsContainer.appendChild(monthlySummary);
+  
+  // Create monthly breakdown
+  Object.keys(monthlyData).sort().reverse().forEach(monthKey => {
+    const month = monthlyData[monthKey];
+    const monthSection = document.createElement('div');
+    monthSection.className = 'expandable-section';
+    monthSection.innerHTML = `
+      <div class="expandable-header">
+        <h3><i class="fas fa-calendar"></i> ${month.month}</h3>
+        <span class="status-badge status-paid">${formatCurrency(month.totalCollections)}</span>
+        <i class="fas fa-chevron-down expand-icon"></i>
+      </div>
+      <div class="expandable-content">
+        <div class="expandable-content-inner">
+          <div class="summary-cards">
+            <div class="summary-card">
+              <h3>Members Paid</h3>
+              <div class="amount">${month.memberCount}</div>
+            </div>
+            <div class="summary-card">
+              <h3>Fines Collected</h3>
+              <div class="amount">${formatCurrency(month.totalFines)}</div>
+            </div>
+            <div class="summary-card">
+              <h3>Transport Fees</h3>
+              <div class="amount">${formatCurrency(month.totalTransport)}</div>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Member</th>
+                <th>Date</th>
+                <th>Monthly Collection</th>
+                <th>Fines</th>
+                <th>Transport</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${month.payments.map(payment => `
+                <tr>
+                  <td>${payment.name} ${payment.surname}</td>
+                  <td>${payment.date}</td>
+                  <td>${formatCurrency(payment.monthlyCollection)}</td>
+                  <td>${formatCurrency(extractAmountFromString(payment.fines))}</td>
+                  <td>${formatCurrency(payment.transport)}</td>
+                  <td>${formatCurrency(payment.totalPayment)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+    monthlyCollectionsContainer.appendChild(monthSection);
+  });
+  
+  // Add expand functionality
+  document.querySelectorAll('#monthlyCollectionsContainer .expandable-header').forEach(header => {
+    header.addEventListener('click', function() {
+      const content = this.nextElementSibling;
+      const isExpanded = content.classList.contains('expanded');
+      
+      if (isExpanded) {
+        content.classList.remove('expanded');
+        this.classList.remove('expanded');
+      } else {
+        content.classList.add('expanded');
+        this.classList.add('expanded');
+      }
+    });
+  });
+}
+
+// NEW: Enhanced Yearly View Report with search and proper view switching
+function generateYearlyViewReport() {
+  const yearlyViewContainer = document.getElementById('yearlyViewContainer');
+  yearlyViewContainer.innerHTML = '';
+  
+  // Group payments by year
+  const yearlyData = {};
+  
+  payments.forEach(payment => {
+    const paymentDate = new Date(payment.date);
+    const year = paymentDate.getFullYear().toString();
+    
+    if (!yearlyData[year]) {
+      yearlyData[year] = {
+        year: year,
+        totalCollections: 0,
+        totalFines: 0,
+        totalTransport: 0,
+        memberCount: 0,
+        monthlyBreakdown: {}
+      };
+    }
+    
+    yearlyData[year].totalCollections += parseFloat(payment.monthlyCollection || 0);
+    yearlyData[year].totalFines += extractAmountFromString(payment.fines);
+    yearlyData[year].totalTransport += parseFloat(payment.transport || 0);
+    yearlyData[year].memberCount++;
+    
+    // Monthly breakdown
+    const month = (paymentDate.getMonth() + 1).toString().padStart(2, '0');
+    if (!yearlyData[year].monthlyBreakdown[month]) {
+      yearlyData[year].monthlyBreakdown[month] = 0;
+    }
+    yearlyData[year].monthlyBreakdown[month] += parseFloat(payment.monthlyCollection || 0);
+  });
+  
+  // Create yearly summary
+  Object.keys(yearlyData).sort().reverse().forEach(yearKey => {
+    const year = yearlyData[yearKey];
+    const yearSection = document.createElement('div');
+    yearSection.className = 'expandable-section';
+    
+    // Create chart data for monthly breakdown
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthlyData = months.map((month, index) => {
+      const monthKey = (index + 1).toString().padStart(2, '0');
+      return year.monthlyBreakdown[monthKey] || 0;
+    });
+    
+    yearSection.innerHTML = `
+      <div class="expandable-header">
+        <h3><i class="fas fa-calendar-alt"></i> ${year.year}</h3>
+        <span class="status-badge status-paid">${formatCurrency(year.totalCollections)}</span>
+        <i class="fas fa-chevron-down expand-icon"></i>
+      </div>
+      <div class="expandable-content">
+        <div class="expandable-content-inner">
+          <!-- Yearly summary and month/table moved into the Organizational view below -->
+          
+          <!-- NEW: Enhanced Performance Toggle -->
+          <div class="performance-toggle">
+            <button class="performance-btn active" id="organizationalPerformanceBtn-${year.year}">
+              <i class="fas fa-building"></i> Organizational Performance
+            </button>
+            <button class="performance-btn" id="membersPerformanceBtn-${year.year}">
+              <i class="fas fa-users"></i> Members Performance
+            </button>
+          </div>
+          
+          <!-- NEW: Enhanced Organizational Performance Section -->
+          <div class="performance-view-container active" id="organizationalPerformance-${year.year}">
+            <div class="organizational-performance-container">
+              <div class="organizational-performance-header">
+                <h3><i class="fas fa-building"></i> Organizational Progress</h3>
+                <div class="status-badge status-paid">${formatCurrency(year.totalCollections)}</div>
+              </div>
+              <!-- Yearly summary moved here -->
+              <div class="yearly-summary">
+                <div class="yearly-stat">
+                  <h4>Total Members</h4>
+                  <div class="amount">${members.length}</div>
+                </div>
+                <div class="yearly-stat">
+                  <h4>Fines Collected</h4>
+                  <div class="amount">${formatCurrency(year.totalFines)}</div>
+                </div>
+                <div class="yearly-stat">
+                  <h4>Transport Fees</h4>
+                  <div class="amount">${formatCurrency(year.totalTransport)}</div>
+                </div>
+                <div class="yearly-stat total">
+                  <h4>Total Revenue</h4>
+                  <div class="amount">${formatCurrency(year.totalCollections + year.totalFines + year.totalTransport)}</div>
+                </div>
+              </div>
+
+              <!-- Month / Collections / Percentage table moved here -->
+              <div style="margin: 1rem 0;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Month</th>
+                      <th>Collections</th>
+                      <th>Percentage</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${months.map((month, index) => {
+                      const monthKey = (index + 1).toString().padStart(2, '0');
+                      const amount = year.monthlyBreakdown[monthKey] || 0;
+                      const percentage = year.totalCollections > 0 ? ((amount / year.totalCollections) * 100).toFixed(1) : 0;
+                      return `
+                        <tr>
+                          <td>${month}</td>
+                          <td>${formatCurrency(amount)}</td>
+                          <td class="percentage-cell">
+                            <div class="percentage-bar-container">
+                              <div class="percentage-bar monthly-bar-${index+1}" style="width: ${percentage}%">
+                                <div class="percentage-text">${percentage}%</div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      `;
+                    }).join('')}
+                  </tbody>
+                </table>
+              </div>
+              <div style="margin: 1.5rem 0 2rem 0;">
+                <h4 style="margin-bottom: 0.75rem; color: var(--secondary);">Monthly Collections Breakdown</h4>
+                <div style="background: var(--card-bg); padding: 1rem; border-radius: 10px; box-shadow: var(--shadow);">
+                  <canvas id="yearlyChart-${year.year}" height="100"></canvas>
+                </div>
+              </div>
+              
+              <div class="monthly-goal-container">
+                <h4>Monthly Collection Goal Progress</h4>
+                <div class="progress-container">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${Math.min(100, (year.totalCollections / (1200 * members.length)) * 100)}%">
+                      <div class="progress-percentage">${Math.min(100, (year.totalCollections / (1200 * members.length)) * 100).toFixed(1)}%</div>
+                    </div>
+                  </div>
+                  <div class="progress-text">
+                    <span>Collected: ${formatCurrency(year.totalCollections)}</span>
+                    <span>Goal: ${formatCurrency(1200 * members.length)}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="monthly-breakdown-grid">
+                <div class="monthly-breakdown-card">
+                  <h5>Monthly Collections</h5>
+                  <div class="amount">${formatCurrency(year.totalCollections)}</div>
+                  <div class="percentage">${((year.totalCollections / (1200 * members.length)) * 100).toFixed(1)}% of goal</div>
+                </div>
+                <div class="monthly-breakdown-card">
+                  <h5>Fines Collected</h5>
+                  <div class="amount">${formatCurrency(year.totalFines)}</div>
+                  <div class="percentage">Additional revenue</div>
+                </div>
+                <div class="monthly-breakdown-card">
+                  <h5>Transport Fees</h5>
+                  <div class="amount">${formatCurrency(year.totalTransport)}</div>
+                  <div class="percentage">Additional revenue</div>
+                </div>
+                <div class="monthly-breakdown-card">
+                  <h5>Total Revenue</h5>
+                  <div class="amount">${formatCurrency(year.totalCollections + year.totalFines + year.totalTransport)}</div>
+                  <div class="percentage">Overall performance</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- NEW: Enhanced Members Performance Section -->
+          <div class="performance-view-container" id="membersPerformance-${year.year}">
+            <div class="organizational-performance-container">
+              <div class="organizational-performance-header">
+                <h3><i class="fas fa-users"></i> Member Performance</h3>
+                <div class="status-badge status-paid">${members.length} Members</div>
+              </div>
+              
+              <div class="yearly-view-search">
+                <input type="text" id="yearlyMemberSearch-${year.year}" placeholder="Search members by name...">
+              </div>
+              <div id="yearlyMemberPerformance-${year.year}">
+                <!-- Member performance will be populated here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    yearlyViewContainer.appendChild(yearSection);
+    
+    // Create chart after DOM is updated
+    setTimeout(() => {
+      const ctx = document.getElementById(`yearlyChart-${year.year}`)?.getContext('2d');
+      if (ctx) {
+        // Bright and unique colors for each month
+        const backgroundColors = [
+          '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD',
+          '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9', '#F8C471', '#82E0AA'
+        ];
+        
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: months,
+            datasets: [{
+              label: 'Monthly Collections',
+              data: monthlyData,
+              backgroundColor: backgroundColors,
+              borderColor: backgroundColors,
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function(value) {
+                    return 'R' + value;
+                  }
+                }
+              }
+            },
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return `R${context.parsed.y}`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+      
+      // Generate member performance for this year
+      generateYearlyMemberPerformance(year.year, year.totalCollections);
+      
+      // Add event listeners for performance toggle
+      document.getElementById(`organizationalPerformanceBtn-${year.year}`).addEventListener('click', function() {
+        // Update active button
+        document.querySelectorAll(`#organizationalPerformanceBtn-${year.year}, #membersPerformanceBtn-${year.year}`).forEach(btn => {
+          btn.classList.remove('active');
+        });
+        this.classList.add('active');
+        
+        // Show organizational performance, hide members performance
+        document.getElementById(`organizationalPerformance-${year.year}`).classList.add('active');
+        document.getElementById(`membersPerformance-${year.year}`).classList.remove('active');
+      });
+      
+      document.getElementById(`membersPerformanceBtn-${year.year}`).addEventListener('click', function() {
+        // Update active button
+        document.querySelectorAll(`#organizationalPerformanceBtn-${year.year}, #membersPerformanceBtn-${year.year}`).forEach(btn => {
+          btn.classList.remove('active');
+        });
+        this.classList.add('active');
+        
+        // Show members performance, hide organizational performance
+        document.getElementById(`organizationalPerformance-${year.year}`).classList.remove('active');
+        document.getElementById(`membersPerformance-${year.year}`).classList.add('active');
+      });
+      
+      // Add search functionality
+      document.getElementById(`yearlyMemberSearch-${year.year}`).addEventListener('input', function() {
+        generateYearlyMemberPerformance(year.year, year.totalCollections, this.value);
+      });
+    }, 100);
+  });
+  
+  // Add expand functionality
+  document.querySelectorAll('#yearlyViewContainer .expandable-header').forEach(header => {
+    header.addEventListener('click', function() {
+      const content = this.nextElementSibling;
+      const isExpanded = content.classList.contains('expanded');
+      
+      if (isExpanded) {
+        content.classList.remove('expanded');
+        this.classList.remove('expanded');
+      } else {
+        content.classList.add('expanded');
+        this.classList.add('expanded');
+      }
+    });
+  });
+}
+
+// NEW: Enhanced Yearly Member Performance with search and goal indicator
+function generateYearlyMemberPerformance(year, yearlyTotal, searchTerm = '') {
+  const container = document.getElementById(`yearlyMemberPerformance-${year}`);
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  // Calculate performance metrics for each member
+  const memberPerformance = members.map(member => {
+    // Find payments for this member in the specific year
+    const memberPayments = payments.filter(payment => {
+      const paymentDate = new Date(payment.date);
+      const paymentYear = paymentDate.getFullYear().toString();
+      
+      if (paymentYear !== year) return false;
+      
+      const paymentName = `${payment.name} ${payment.surname}`;
+      return paymentName === member.name;
+    });
+    
+    // Calculate total monthly collections for this year
+    const totalMonthlyCollections = memberPayments.reduce((sum, payment) => {
+      return sum + (parseFloat(payment.monthlyCollection) || 0);
+    }, 0);
+    
+    // Calculate distance from R1200 goal
+    const goal = 1200;
+    const distanceFromGoal = goal - totalMonthlyCollections;
+    const percentageOfGoal = (totalMonthlyCollections / goal) * 100;
+    
+    return {
+      member,
+      totalMonthlyCollections,
+      distanceFromGoal,
+      percentageOfGoal: Math.min(100, percentageOfGoal),
+      paymentCount: memberPayments.length
+    };
+  });
+  
+  // Filter by search term if provided
+  let filteredPerformance = memberPerformance;
+  if (searchTerm) {
+    const searchLower = searchTerm.toLowerCase();
+    filteredPerformance = memberPerformance.filter(performance => {
+      const memberName = performance.member.name.toLowerCase();
+      const memberNumber = performance.member.memberNumber.toLowerCase();
+      return memberName.includes(searchLower) || memberNumber.includes(searchLower);
+    });
+  }
+  
+  // Sort by total collections (highest first)
+  filteredPerformance.sort((a, b) => b.totalMonthlyCollections - a.totalMonthlyCollections);
+  
+  // Create performance cards for each member
+  filteredPerformance.forEach(performance => {
+    const card = document.createElement('div');
+    card.className = 'member-performance-card';
+    
+    card.innerHTML = `
+      <div class="member-performance-header">
+        <div class="member-performance-name">
+          ${performance.member.name} (${performance.member.memberNumber})
+        </div>
+        <div class="member-performance-rating">
+          ${performance.paymentCount} payments
+        </div>
+      </div>
+      <div class="member-performance-stats">
+        <div class="performance-stat payments">
+          <div class="label">Monthly Collections</div>
+          <div class="value">${formatCurrency(performance.totalMonthlyCollections)}</div>
+        </div>
+        <div class="performance-stat">
+          <div class="label">Distance from Goal</div>
+          <div class="value" style="color: ${performance.distanceFromGoal <= 0 ? 'var(--success)' : 'var(--accent)'}">
+            ${performance.distanceFromGoal <= 0 ? 'Goal Achieved!' : formatCurrency(performance.distanceFromGoal)}
+          </div>
+        </div>
+        <div class="performance-stat">
+          <div class="label">Progress</div>
+          <div class="value">${performance.percentageOfGoal.toFixed(1)}%</div>
+        </div>
+      </div>
+      <div class="progress-bar" style="margin-top: 1rem; height: 20px; position: relative;">
+        <div class="progress-fill" style="width: ${performance.percentageOfGoal}%">
+          <div class="progress-percentage" style="font-size: 0.8rem;">${performance.percentageOfGoal.toFixed(1)}%</div>
+        </div>
+      </div>
+      <div class="member-goal-indicator">
+        <i class="fas fa-bullseye"></i>
+        Goal: R1200
+      </div>
+    `;
+    
+    container.appendChild(card);
+  });
+  
+  // Add summary statistics
+  const membersAchievedGoal = filteredPerformance.filter(m => m.distanceFromGoal <= 0).length;
+  const averageProgress = filteredPerformance.length > 0 ? 
+    filteredPerformance.reduce((sum, p) => sum + p.percentageOfGoal, 0) / filteredPerformance.length : 0;
+  
+  const summary = document.createElement('div');
+  summary.className = 'summary-cards';
+  summary.innerHTML = `
+    <div class="summary-card">
+      <h3>Members Achieved Goal</h3>
+      <div class="amount">${membersAchievedGoal}</div>
+    </div>
+    <div class="summary-card">
+      <h3>Average Progress</h3>
+      <div class="amount">${averageProgress.toFixed(1)}%</div>
+    </div>
+    <div class="summary-card">
+      <h3>Total Members</h3>
+      <div class="amount">${filteredPerformance.length}</div>
+    </div>
+    <div class="summary-card total">
+      <h3>Goal Completion Rate</h3>
+      <div class="amount">${filteredPerformance.length > 0 ? ((membersAchievedGoal / filteredPerformance.length) * 100).toFixed(1) : 0}%</div>
+    </div>
+  `;
+  
+  container.insertBefore(summary, container.firstChild);
+  
+  // Show message if no members found
+  if (filteredPerformance.length === 0) {
+    const noResults = document.createElement('div');
+    noResults.style.textAlign = 'center';
+    noResults.style.padding = '2rem';
+    noResults.style.color = 'var(--text-light)';
+    noResults.innerHTML = `
+      <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+      <p>No members found matching your search.</p>
+    `;
+    container.appendChild(noResults);
+  }
+}
+
+// NEW: Generate red flag report
+function generateRedFlagReport() {
+  const redFlagContainer = document.getElementById('redFlagContainer');
+  redFlagContainer.innerHTML = '';
+  
+  const redFlagMembers = checkRedFlagMembers();
+  
+  if (redFlagMembers.length === 0) {
+    redFlagContainer.innerHTML = `
+      <div style="text-align: center; padding: 3rem; background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow);">
+        <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem;"></i>
+        <h3 style="color: var(--success); margin-bottom: 1rem;">No Red Flagged Members</h3>
+        <p class="small-muted">All members have made payments within the last 6 months.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // Create summary
+  const summarySection = document.createElement('div');
+  summarySection.className = 'summary-cards';
+  summarySection.innerHTML = `
+    <div class="summary-card">
+      <h3>Red Flagged Members</h3>
+      <div class="amount" style="color: var(--accent);">${redFlagMembers.length}</div>
+    </div>
+    <div class="summary-card">
+      <h3>Percentage of Total</h3>
+      <div class="amount" style="color: var(--accent);">${((redFlagMembers.length / members.length) * 100).toFixed(1)}%</div>
+    </div>
+    <div class="summary-card total">
+      <h3>Action Required</h3>
+      <div class="amount" style="color: var(--accent);">Immediate</div>
+    </div>
+  `;
+  redFlagContainer.appendChild(summarySection);
+  
+  // Create table
+  const tableSection = document.createElement('div');
+  tableSection.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Member Number</th>
+          <th>Full Name</th>
+          <th>ID Number</th>
+          <th>Phone</th>
+          <th>Last Payment</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${redFlagMembers.map(member => `
+          <tr class="flagged-member">
+            <td>${member.memberNumber}</td>
+            <td>${member.name}</td>
+            <td>${member.idNumber}</td>
+            <td>${member.phone}</td>
+            <td>${member.lastPayment ? member.lastPayment.toLocaleDateString() : 'Never'}</td>
+            <td>
+              <span class="payment-status status-overdue">Overdue</span>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+  redFlagContainer.appendChild(tableSection);
+}
+
+// MODIFIED: Generate transport report with due/paid tabs
+function generateTransportReport() {
+  // Get all transport payments
+  const transportPayments = payments.filter(payment => parseFloat(payment.transport || 0) > 0);
+  
+  // Update the transport tabs
+  updateTransportDueTab();
+  updateTransportPaidTab(transportPayments);
+  
+  // Show summary
+  const paidTransport = transportPayments
+    .filter(payment => !payment.isDue)
+    .reduce((sum, payment) => sum + parseFloat(payment.transport || 0), 0);
+  
+  const dueTransport = transportPayments
+    .filter(payment => payment.isDue)
+    .reduce((sum, payment) => sum + parseFloat(payment.transport || 0), 0);
+  
+  const transportContainer = document.getElementById('transportContainer');
+  if (transportContainer) {
+    transportContainer.innerHTML = '';
+    
+    const transportSummary = document.createElement('div');
+    transportSummary.className = 'summary-cards';
+    transportSummary.innerHTML = `
+      <div class="summary-card">
+        <h3>Total Transport Collected</h3>
+        <div class="amount">${formatCurrency(paidTransport)}</div>
+      </div>
+      <div class="summary-card">
+        <h3>Transport Due</h3>
+        <div class="amount" style="color: var(--accent);">${formatCurrency(dueTransport)}</div>
+      </div>
+      <div class="summary-card">
+        <h3>Transport Payments Made</h3>
+        <div class="amount">${transportPayments.filter(p => !p.isDue).length}</div>
+      </div>
+      <div class="summary-card">
+        <h3>Transport Payments Due</h3>
+        <div class="amount" style="color: var(--accent);">${transportPayments.filter(p => p.isDue).length}</div>
+      </div>
+    `;
+    transportContainer.appendChild(transportSummary);
+  }
+}
+
+// MODIFIED: Update Transport Due Tab to show only due payments
+function updateTransportDueTab() {
+  const transportDueContainer = document.getElementById('transportDueContainer');
+  if (!transportDueContainer) return;
+  
+  transportDueContainer.innerHTML = '';
+  
+  // MODIFIED: Get only due transport payments
+  const dueTransportPayments = payments.filter(payment => 
+    payment.isDue && parseFloat(payment.transport || 0) > 0
+  );
+  
+  if (dueTransportPayments.length === 0) {
+    transportDueContainer.innerHTML = `
+      <div style="text-align: center; padding: 3rem; background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow);">
+        <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem;"></i>
+        <h3 style="color: var(--success); margin-bottom: 1rem;">All Transport Paid</h3>
+        <p class="small-muted">All transport fees have been paid.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  const tableSection = document.createElement('div');
+  tableSection.innerHTML = `
+    <h3 style="margin: 2rem 0 1rem 0; color: var(--secondary);">
+      <i class="fas fa-list"></i> Members Due for Transport Payment
+    </h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Member</th>
+          <th>Date Charged</th>
+          <th>Transport Fee</th>
+          <th>Funeral For</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${dueTransportPayments.map(payment => `
+          <tr class="flagged-member">
+            <td>${payment.name} ${payment.surname}</td>
+            <td>${payment.date}</td>
+            <td>${formatCurrency(payment.transport)}</td>
+            <td>${payment.funeralFor || 'Not specified'}</td>
+            <td>
+              <span class="payment-status status-overdue">Unpaid</span>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+  transportDueContainer.appendChild(tableSection);
+}
+
+// MODIFIED: Update Transport Paid Tab to show only paid transport payments
+function updateTransportPaidTab(transportPayments) {
+  const transportPaidContainer = document.getElementById('transportPaidContainer');
+  if (!transportPaidContainer) return;
+  
+  transportPaidContainer.innerHTML = '';
+  
+  // MODIFIED: Get only paid transport payments (not due)
+  const paidTransportPayments = transportPayments.filter(payment => 
+    !payment.isDue && parseFloat(payment.transport || 0) > 0
+  );
+  
+  if (paidTransportPayments.length === 0) {
+    transportPaidContainer.innerHTML = `
+      <div style="text-align: center; padding: 3rem; background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow);">
+        <i class="fas fa-info-circle" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem;"></i>
+        <h3 style="color: var(--warning); margin-bottom: 1rem;">No Transport Payments</h3>
+        <p class="small-muted">No transport payments have been recorded yet.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  const tableSection = document.createElement('div');
+  tableSection.innerHTML = `
+    <h3 style="margin: 2rem 0 1rem 0; color: var(--secondary);">
+      <i class="fas fa-list"></i> Transport Payment Details
+    </h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Member</th>
+          <th>Date Paid</th>
+          <th>Transport Fee</th>
+          <th>Funeral For</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${paidTransportPayments.map(payment => `
+          <tr>
+            <td>${payment.name} ${payment.surname}</td>
+            <td>${payment.date}</td>
+            <td>${formatCurrency(payment.transport)}</td>
+            <td>${payment.funeralFor || 'Not specified'}</td>
+            <td>
+              <span class="payment-status status-paid">Paid</span>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+  transportPaidContainer.appendChild(tableSection);
+}
+
+// NEW: Generate transport breakdown
+function generateTransportBreakdown() {
+  const breakdownContainer = document.getElementById('transportBreakdownContainer');
+  if (!breakdownContainer) return;
+  
+  breakdownContainer.innerHTML = '';
+  
+  // Get all transport payments
+  const transportPayments = payments.filter(payment => parseFloat(payment.transport || 0) > 0);
+  
+  // Calculate breakdown
+  const paidTransport = transportPayments
+    .filter(payment => !payment.isDue)
+    .reduce((sum, payment) => sum + parseFloat(payment.transport || 0), 0);
+  
+  const dueTransport = transportPayments
+    .filter(payment => payment.isDue)
+    .reduce((sum, payment) => sum + parseFloat(payment.transport || 0), 0);
+  
+  const paidCount = transportPayments.filter(p => !p.isDue).length;
+  const dueCount = transportPayments.filter(p => p.isDue).length;
+  
+  const breakdownSection = document.createElement('div');
+  breakdownSection.className = 'breakdown-section';
+  breakdownSection.innerHTML = `
+    <h3><i class="fas fa-chart-pie"></i> Transport Fee Breakdown</h3>
+    <div class="summary-cards">
+      <div class="summary-card">
+        <h3>Total Paid</h3>
+        <div class="amount">${formatCurrency(paidTransport)}</div>
+        <p>${paidCount} payments</p>
+      </div>
+      <div class="summary-card">
+        <h3>Total Due</h3>
+        <div class="amount" style="color: var(--accent);">${formatCurrency(dueTransport)}</div>
+        <p>${dueCount} payments</p>
+      </div>
+      <div class="summary-card total">
+        <h3>Total Potential</h3>
+        <div class="amount">${formatCurrency(paidTransport + dueTransport)}</div>
+        <p>${paidCount + dueCount} total</p>
+      </div>
+    </div>
+    
+    <h4 style="margin-top: 2rem; color: var(--secondary);">Members Who Have Paid</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>Member</th>
+          <th>Amount Paid</th>
+          <th>Funeral For</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${transportPayments.filter(p => !p.isDue).map(payment => `
+          <tr>
+            <td>${payment.name} ${payment.surname}</td>
+            <td>${formatCurrency(payment.transport)}</td>
+            <td>${payment.funeralFor || 'Not specified'}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    
+    <h4 style="margin-top: 2rem; color: var(--accent);">Members Who Owe</h4>
+    <table>
+      <thead>
+        <tr>
+          <th>Member</th>
+          <th>Amount Due</th>
+          <th>Funeral For</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${transportPayments.filter(p => p.isDue).map(payment => `
+          <tr class="flagged-member">
+            <td>${payment.name} ${payment.surname}</td>
+            <td>${formatCurrency(payment.transport)}</td>
+            <td>${payment.funeralFor || 'Not specified'}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+  
+  breakdownContainer.appendChild(breakdownSection);
+}
+
+// NEW: Toggle funeral for input when transport button is clicked
+transportPaymentBtn.addEventListener('click', function() {
+  funeralForInput.style.display = funeralForInput.style.display === 'none' ? 'block' : 'none';
+  if (funeralForInput.style.display === 'block') {
+    funeralForInput.focus();
+  }
+});
+
+// MODIFIED: Payment Form Submission - Handle transport payments
+paymentForm.addEventListener('submit', e => {
+  e.preventDefault();
+  
+  const memberIndex = document.getElementById('paymentMember').value;
+  if (!memberIndex) {
+    alert('Please select a member');
+    return;
+  }
+  
+  const member = members[memberIndex];
+  if (!member) {
+    return;
+  }
+  
+  const date = document.getElementById('paymentDate').value;
+  const monthlyCollection = parseFloat(document.getElementById('monthlyCollection').value) || 0;
+  const dressCode = document.getElementById('dressCode').value;
+  const fineType = document.getElementById('fineType').value;
+  const fineAmount = parseFloat(document.getElementById('fineAmount').value) || 0;
+  const transport = parseFloat(document.getElementById('transport').value) || 0;
+  const funeralFor = document.getElementById('funeralFor').value || '';
+  
+  // MODIFIED: Check if this is a transport payment for an existing due transport
+  let isTransportPayment = false;
+  if (transport > 0) {
+    // Find if there's a due transport payment for this member
+    const dueTransportPaymentIndex = payments.findIndex(payment => {
+      const paymentName = `${payment.name} ${payment.surname}`;
+      return paymentName === member.name && payment.isDue && payment.transport > 0;
+    });
+    
+    if (dueTransportPaymentIndex !== -1) {
+      // Update the existing due transport payment to paid
+      payments[dueTransportPaymentIndex].isDue = false;
+      payments[dueTransportPaymentIndex].date = date;
+      payments[dueTransportPaymentIndex].funeralFor = funeralFor;
+      isTransportPayment = true;
+    }
+  }
+  
+  // Only create a new payment if this isn't a transport payment for an existing due
+  if (!isTransportPayment) {
+    // Create payment object
+    const paymentObj = {
+      bookNo: member.memberNumber || payments.length + 1,
+      name: member.name.split(' ')[0],
+      surname: member.name.split(' ').slice(1).join(' ') || '',
+      date,
+      monthlyCollection,
+      dressCode,
+      // NEW: Handle fines with amount (paid) or without amount (due)
+      fines: fineType ? `${fineType}${fineAmount > 0 ? ` (R${fineAmount.toFixed(2)}) - Paid` : ' - Due'}` : '',
+      transport,
+      funeralFor,
+      memberId: memberIndex,
+      isDue: false // Default to paid
+    };
+    
+    // Calculate total payment
+    paymentObj.totalPayment = calculateTotalPayment(paymentObj);
+    
+    payments.push(paymentObj);
+  }
+  
+  savePayments();
+  renderPayments();
+  renderMembers();
+  updatePaymentSummary();
+  paymentForm.reset();
+  document.getElementById('paymentDate').valueAsDate = new Date();
+  funeralForInput.style.display = 'none';
+  
+  showToast('Payment recorded successfully!');
+});
+
+// MODIFIED: Charge transport fee to all members - now marks as due
+function chargeTransportFeeToAll() {
+  const today = new Date().toISOString().split('T')[0];
+  const funeralFor = prompt('Enter the name of the deceased for this transport collection:') || '';
+  
+  members.forEach(member => {
+    // Check if member already has a transport payment for today
+    const existingPayment = payments.find(payment => {
+      const paymentName = `${payment.name} ${payment.surname}`;
+      return paymentName === member.name && payment.date === today && parseFloat(payment.transport || 0) > 0;
+    });
+    
+    if (!existingPayment) {
+      const transportPayment = {
+        bookNo: member.memberNumber || payments.length + 1,
+        name: member.name.split(' ')[0],
+        surname: member.name.split(' ').slice(1).join(' ') || '',
+        date: today,
+        monthlyCollection: 0,
+        dressCode: '',
+        fines: '',
+        transport: 20,
+        funeralFor: funeralFor,
+        totalPayment: 20,
+        isDue: true // MODIFIED: Mark as due until paid
+      };
+      
+      payments.push(transportPayment);
+    }
+  });
+  
+  savePayments();
+  renderPayments();
+  updatePaymentSummary();
+  showToast(`R20 transport fee charged to all members for ${funeralFor || 'today'}!`);
+}
+
+// FIXED: Payment Edit Modal
+function openEditPaymentModal(index) {
+  editPaymentIndex = index;
+  const payment = payments[index];
+  
+  document.getElementById('editPaymentDate').value = payment.date;
+  document.getElementById('editMonthlyCollection').value = payment.monthlyCollection || '';
+  document.getElementById('editDressCode').value = payment.dressCode || '';
+  
+  // Extract fine type and amount
+  if (payment.fines && payment.fines.includes('(')) {
+    const fineParts = payment.fines.split(' (');
+    document.getElementById('editFineType').value = fineParts[0] || '';
+    if (fineParts[1]) {
+      const amountMatch = fineParts[1].match(/R([0-9.]+)/);
+      if (amountMatch) {
+        document.getElementById('editFineAmount').value = amountMatch[1];
+      }
+    }
+  } else {
+    const fineParts = payment.fines ? payment.fines.split(' - ') : [''];
+    document.getElementById('editFineType').value = fineParts[0] || '';
+    document.getElementById('editFineAmount').value = '';
+  }
+  
+  document.getElementById('editTransport').value = payment.transport || '';
+  document.getElementById('editFuneralFor').value = payment.funeralFor || '';
+  
+  document.getElementById('paymentEditModal').style.display = 'flex';
+}
+
+// FIXED: Save Payment Edit
+document.getElementById('savePaymentEdit').addEventListener('click', function() {
+  if (editPaymentIndex === null) return;
+  
+  const payment = payments[editPaymentIndex];
+  
+  // Update payment data
+  payment.date = document.getElementById('editPaymentDate').value;
+  payment.monthlyCollection = parseFloat(document.getElementById('editMonthlyCollection').value) || 0;
+  payment.dressCode = document.getElementById('editDressCode').value;
+  
+  const fineType = document.getElementById('editFineType').value;
+  const fineAmount = parseFloat(document.getElementById('editFineAmount').value) || 0;
+  // NEW: Handle fines with amount (paid) or without amount (due)
+  payment.fines = fineType ? `${fineType}${fineAmount > 0 ? ` (R${fineAmount.toFixed(2)}) - Paid` : ' - Due'}` : '';
+  
+  payment.transport = parseFloat(document.getElementById('editTransport').value) || 0;
+  payment.funeralFor = document.getElementById('editFuneralFor').value || '';
+  
+  // Recalculate total payment
+  payment.totalPayment = calculateTotalPayment(payment);
+  
+  savePayments();
+  renderPayments();
+  updatePaymentSummary();
+  document.getElementById('paymentEditModal').style.display = 'none';
+  editPaymentIndex = null;
+  
+  showToast('Payment updated successfully!');
+});
+
+// FIXED: Payment Delete Modal
+function openPaymentDeleteModal(index) {
+  deletePaymentIndex = index;
+  document.getElementById('paymentDeleteModal').style.display = 'flex';
+}
+
+// FIXED: Confirm Payment Delete
+document.getElementById('confirmPaymentDelete').addEventListener('click', function() {
+  if (deletePaymentIndex === null) return;
+  
+  payments.splice(deletePaymentIndex, 1);
+  savePayments();
+  renderPayments();
+  updatePaymentSummary();
+  document.getElementById('paymentDeleteModal').style.display = 'none';
+  deletePaymentIndex = null;
+  
+  showToast('Payment deleted successfully!');
+});
+
+// FIXED: Edit Member Modal
+function openEditMemberModal(index) {
+  currentMemberIndex = index;
+  const member = members[index];
+  
+  document.getElementById('editMemberNumber').value = member.memberNumber || '';
+  document.getElementById('editName').value = member.name || '';
+  document.getElementById('editIdNumber').value = member.idNumber || '';
+  document.getElementById('editPhone').value = member.phone || '';
+  
+  document.getElementById('editMemberModal').style.display = 'flex';
+}
+
+// FIXED: Save Member Edit
+document.getElementById('saveMemberEdit').addEventListener('click', function() {
+  if (currentMemberIndex === null) return;
+  
+  const member = members[currentMemberIndex];
+  
+  // Update member data
+  member.memberNumber = document.getElementById('editMemberNumber').value.trim();
+  member.name = document.getElementById('editName').value.trim();
+  member.idNumber = document.getElementById('editIdNumber').value.trim();
+  member.phone = document.getElementById('editPhone').value.trim();
+  
+  saveMembers();
+  renderMembers(searchInput.value.trim());
+  updatePaymentMemberDropdown();
+  document.getElementById('editMemberModal').style.display = 'none';
+  currentMemberIndex = null;
+  
+  showToast('Member updated successfully!');
+});
+
+// FIXED: Member Delete functionality
+document.getElementById('confirmDelete').addEventListener('click', function() {
+  if (deleteIndex === null) return;
+  
+  // Also remove any payments associated with this member
+  const member = members[deleteIndex];
+  payments = payments.filter(payment => {
+    const paymentName = `${payment.name} ${payment.surname}`;
+    return paymentName !== member.name;
+  });
+  
+  members.splice(deleteIndex, 1);
+  saveMembers();
+  savePayments();
+  renderMembers(searchInput.value.trim());
+  renderPayments();
+  updatePaymentSummary();
+  updatePaymentMemberDropdown();
+  document.getElementById('deleteModal').style.display = 'none';
+  deleteIndex = null;
+  
+  showToast('Member deleted successfully!');
+});
+
+// NEW: Event Listeners for new navigation
+document.getElementById('monthlyCollectionsView').addEventListener('click', function() {
+  showMonthlyCollectionsPage();
+});
+
+document.getElementById('yearlyView').addEventListener('click', function() {
+  showYearlyViewPage();
+});
+
+document.getElementById('backToStatementsFromMonthly').addEventListener('click', function() {
+  showReport('statements');
+});
+
+document.getElementById('backToStatementsFromYearly').addEventListener('click', function() {
+  showReport('statements');
+});
+
+// NEW: Functions for navigation
+function showMonthlyCollectionsPage() {
+  document.querySelectorAll('.report-content').forEach(content => {
+    content.classList.remove('active');
+  });
+  document.getElementById('monthlyCollectionsPage').classList.add('active');
+  generateMonthlyCollectionsReport();
+}
+
+function showYearlyViewPage() {
+  document.querySelectorAll('.report-content').forEach(content => {
+    content.classList.remove('active');
+  });
+  document.getElementById('yearlyViewPage').classList.add('active');
+  generateYearlyViewReport();
+}
+
+// FIXED: Event Listeners for report buttons
+chargeTransportFeeBtn.addEventListener('click', function() {
+  if (confirm('Are you sure you want to charge R20 transport fee to all members?')) {
+    chargeTransportFeeToAll();
+  }
+});
+
+generateTransportReportBtn.addEventListener('click', function() {
+  generateTransportReport();
+  showToast('Transport report generated!');
+});
+
+transportBreakdownBtn.addEventListener('click', function() {
+  generateTransportBreakdown();
+  showToast('Transport breakdown generated!');
+});
+
+// FIXED: Red Flag Report Button
+generateRedFlagReportBtn.addEventListener('click', function() {
+  generateRedFlagReport();
+  showToast('Red flag report generated!');
+});
+
+// NEW: Transport Tab functionality
+document.querySelectorAll('.transport-tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    const tabName = this.getAttribute('data-tab');
+    
+    // Update active tab
+    document.querySelectorAll('.transport-tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    
+    // Show active content
+    document.querySelectorAll('.transport-tab-content').forEach(content => {
+      content.classList.remove('active');
+    });
+    document.getElementById(`transport${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Tab`).classList.add('active');
+  });
+});
+
+// NEW: Attendance Functions
+function initializeAttendance() {
+  // Set date picker to today by default (attendanceDate may be optional)
+  if (document.getElementById('attendanceDate')) {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    document.getElementById('attendanceDate').value = `${yyyy}-${mm}-${dd}`;
+  }
+  
+  // Load attendance for current month/year
+  loadAttendance();
+}
+
+// NEW: Modified loadAttendance to support search
+function loadAttendance(searchTerm = '') {
+  // Prefer explicit date if provided
+  const dateInput = document.getElementById('attendanceDate')?.value;
+  let month, year;
+  if (dateInput) {
+    const parts = dateInput.split('-');
+    year = parts[0];
+    month = String(parseInt(parts[1], 10));
+  } else {
+    // No explicit date provided — use current month/year
+    const today = new Date();
+    year = String(today.getFullYear());
+    month = String(today.getMonth() + 1);
+  }
+  const key = `${year}-${month}`;
+  
+  // Update member count
+  totalMembersCount.textContent = members.length;
+  
+  // Create attendance list
+  attendanceList.innerHTML = '';
+  
+  let filteredMembers = members;
+  
+  // Apply search filter if provided
+  if (searchTerm) {
+    const searchLower = searchTerm.toLowerCase();
+    filteredMembers = members.filter(member => {
+      const name = (member.name || '').toLowerCase();
+      const memberNumber = (member.memberNumber || '').toString().toLowerCase();
+      return name.includes(searchLower) || memberNumber.includes(searchLower);
+    });
+  }
+  
+  filteredMembers.forEach((member, index) => {
+    const memberDiv = document.createElement('div');
+    memberDiv.className = 'attendance-member';
+
+    // Check if member was present (use memberNumber as stable identifier)
+    const isPresent = attendance[key] && attendance[key].includes(member.memberNumber);
+
+    // Use checkbox value equal to memberNumber so we can read/save reliably
+    memberDiv.innerHTML = `
+      <input type="checkbox" id="attendance-${member.memberNumber}" value="${escHtml(member.memberNumber)}" ${isPresent ? 'checked' : ''}>
+      <label for="attendance-${member.memberNumber}">${escHtml(member.name)} (${escHtml(member.memberNumber)})</label>
+    `;
+
+    attendanceList.appendChild(memberDiv);
+  });
+  
+  updateAttendanceStats();
+}
+
+function updateAttendanceStats() {
+  const dateInput = document.getElementById('attendanceDate')?.value;
+  let month, year;
+  if (dateInput) {
+    const parts = dateInput.split('-');
+    year = parts[0];
+    month = String(parseInt(parts[1], 10));
+  } else {
+    const today = new Date();
+    year = String(today.getFullYear());
+    month = String(today.getMonth() + 1);
+  }
+  const key = `${year}-${month}`;
+  
+  const presentMembers = attendance[key] ? attendance[key].length : 0;
+  const total = members.length;
+  const absentMembers = total - presentMembers;
+  const rate = total > 0 ? ((presentMembers / total) * 100).toFixed(1) : 0;
+  
+  presentCount.textContent = presentMembers;
+  absentCount.textContent = absentMembers;
+  attendanceRate.textContent = `${rate}%`;
+}
+
+function saveAttendanceData() {
+  // If a full date is provided use it; otherwise use month/year
+  const dateInput = document.getElementById('attendanceDate')?.value;
+  let month, year;
+  if (dateInput) {
+    const parts = dateInput.split('-');
+    year = parts[0];
+    month = String(parseInt(parts[1], 10));
+  } else {
+    // Fallback: use today's date
+    const today = new Date();
+    year = String(today.getFullYear());
+    month = String(today.getMonth() + 1);
+  }
+  const key = `${year}-${month}`;
+
+  // Get all checked members by value (memberNumber)
+  const presentMembers = [];
+  document.querySelectorAll('#attendanceList input[type="checkbox"]:checked').forEach((checkbox) => {
+    // checkbox.value is memberNumber because we set it when rendering
+    presentMembers.push(checkbox.value);
+  });
+  
+  // Save to attendance data
+  attendance[key] = presentMembers;
+  saveAttendance();
+  
+  updateAttendanceStats();
+  showToast('Attendance saved successfully!');
+}
+
+// NEW: Generate Attendance Report with breakdown
+function generateAttendanceReport() {
+  const container = document.getElementById('attendanceReportContainer');
+  container.innerHTML = '';
+  
+  // Group attendance by month
+  const monthlyAttendance = {};
+  
+  Object.keys(attendance).forEach(key => {
+    const [year, month] = key.split('-');
+    const monthName = new Date(year, month - 1).toLocaleString('default', { month: 'long', year: 'numeric' });
+    
+    if (!monthlyAttendance[year]) {
+      monthlyAttendance[year] = {};
+    }
+    
+    monthlyAttendance[year][month] = {
+      month: monthName,
+      present: attendance[key].length,
+      total: members.length,
+      rate: members.length > 0 ? ((attendance[key].length / members.length) * 100).toFixed(1) : 0,
+      presentMembers: attendance[key],
+      allMembers: members.map(m => m.memberNumber)
+    };
+  });
+  
+  // Create summary
+  const summarySection = document.createElement('div');
+  summarySection.className = 'summary-cards';
+  summarySection.innerHTML = `
+    <div class="summary-card">
+      <h3>Months Recorded</h3>
+      <div class="amount">${Object.keys(attendance).length}</div>
+    </div>
+    <div class="summary-card">
+      <h3>Total Members</h3>
+      <div class="amount">${members.length}</div>
+    </div>
+    <div class="summary-card total">
+      <h3>Average Attendance</h3>
+      <div class="amount">
+        ${Object.keys(attendance).length > 0 ? 
+          (Object.keys(attendance).reduce((sum, key) => sum + (attendance[key].length / members.length * 100), 0) / Object.keys(attendance).length).toFixed(1) + '%' : 
+          '0%'}
+      </div>
+    </div>
+  `;
+  container.appendChild(summarySection);
+  
+  // Create monthly breakdown
+  Object.keys(monthlyAttendance).sort().reverse().forEach(year => {
+    const yearSection = document.createElement('div');
+    yearSection.className = 'expandable-section';
+    
+    let monthlyContent = '';
+    Object.keys(monthlyAttendance[year]).sort((a, b) => b - a).forEach(month => {
+      const data = monthlyAttendance[year][month];
+      
+      // Create tabs for attendance breakdown
+      monthlyContent += `
+        <div class="attendance-breakdown">
+          <div class="attendance-breakdown-tabs">
+            <div class="attendance-breakdown-tab active" data-month="${month}" data-type="present">Present (${data.present})</div>
+            <div class="attendance-breakdown-tab" data-month="${month}" data-type="absent">Absent (${data.total - data.present})</div>
+          </div>
+          <div class="attendance-breakdown-content active" id="attendance-${year}-${month}-present">
+            <h4>Members Present in ${data.month}</h4>
+            <div class="attendance-list">
+              ${members.filter(member => data.presentMembers.includes(member.memberNumber)).map(member => `
+                <div class="attendance-member attendance-member-present">
+                  <i class="fas fa-check-circle" style="color: var(--success); margin-right: 1rem;"></i>
+                  <label>${member.name} (${member.memberNumber})</label>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <div class="attendance-breakdown-content" id="attendance-${year}-${month}-absent">
+            <h4>Members Absent in ${data.month}</h4>
+            <div class="attendance-list">
+              ${members.filter(member => !data.presentMembers.includes(member.memberNumber)).map(member => `
+                <div class="attendance-member attendance-member-absent">
+                  <i class="fas fa-times-circle" style="color: var(--accent); margin-right: 1rem;"></i>
+                  <label>${member.name} (${member.memberNumber})</label>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    
+    yearSection.innerHTML = `
+      <div class="expandable-header">
+        <h3><i class="fas fa-calendar-alt"></i> ${year}</h3>
+        <i class="fas fa-chevron-down expand-icon"></i>
+      </div>
+      <div class="expandable-content">
+        <div class="expandable-content-inner">
+          <table>
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Present</th>
+                <th>Total</th>
+                <th>Attendance Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${Object.keys(monthlyAttendance[year]).sort((a, b) => b - a).map(month => {
+                const data = monthlyAttendance[year][month];
+                return `
+                  <tr>
+                    <td>${data.month}</td>
+                    <td>${data.present}</td>
+                    <td>${data.total}</td>
+                    <td class="percentage-cell">
+                      <div class="percentage-bar-container">
+                        <div class="percentage-bar" style="width: ${data.rate}%">
+                          <div class="percentage-text">${data.rate}%</div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+          ${monthlyContent}
+        </div>
+      </div>
+    `;
+    container.appendChild(yearSection);
+  });
+  
+  // Add expand functionality
+  document.querySelectorAll('#attendanceReportContainer .expandable-header').forEach(header => {
+    header.addEventListener('click', function() {
+      const content = this.nextElementSibling;
+      const isExpanded = content.classList.contains('expanded');
+      
+      if (isExpanded) {
+        content.classList.remove('expanded');
+        this.classList.remove('expanded');
+      } else {
+        content.classList.add('expanded');
+        this.classList.add('expanded');
+      }
+    });
+  });
+  
+  // Add attendance breakdown tab functionality
+  document.querySelectorAll('.attendance-breakdown-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      const month = this.getAttribute('data-month');
+      const type = this.getAttribute('data-type');
+      const year = Object.keys(monthlyAttendance).find(y => monthlyAttendance[y][month]);
+      
+      // Update active tab
+      this.parentElement.querySelectorAll('.attendance-breakdown-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Show active content
+      this.parentElement.parentElement.querySelectorAll('.attendance-breakdown-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(`attendance-${year}-${month}-${type}`).classList.add('active');
+    });
+  });
+}
+
+// Navigation
+document.getElementById("logoContainer").addEventListener('click', () => {
+  document.getElementById("logo").classList.toggle('expanded');
+});
+
+// Navigation
+navLinks.forEach(link => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    const sectionId = link.getAttribute("data-section");
+    showSection(sectionId);
+  });
+});
+
+// Back button functionality
+document.getElementById('backToHomeFromMembers').addEventListener('click', () => showSection('home'));
+document.getElementById('backToHomeFromPayments').addEventListener('click', () => showSection('home'));
+document.getElementById('backToHomeFromAttendance').addEventListener('click', () => showSection('home'));
+document.getElementById('backToHomeFromReports').addEventListener('click', () => showSection('home'));
+
+// Function to show a specific section
+function showSection(sectionId) {
+  sections.forEach(sec => sec.classList.remove("active"));
+  homeHero.style.display = sectionId === "home" ? "block" : "none";
+  homeCards.style.display = sectionId === "home" ? "grid" : "none";
+  
+  if (sectionId && document.getElementById(sectionId)) {
+    const sec = document.getElementById(sectionId);
+    sec.classList.add("active");
+    
+    if (sectionId === "reports") {
+      showReportsDashboard();
+    }
+    
+    if (sectionId === "payments") {
+      updatePaymentMemberDropdown();
+      renderPayments();
+      updatePaymentSummary();
+      setTimeout(initializeExpandableSections, 100);
+    }
+    
+    if (sectionId === "attendance") {
+      initializeAttendance();
+    }
+  }
+}
+
+// Report navigation functionality
+function showReport(reportName) {
+  document.getElementById('reportsDashboard').style.display = 'none';
+  document.querySelectorAll('.report-content').forEach(content => {
+    content.classList.remove('active');
+  });
+  
+  const reportElement = document.getElementById(`${reportName}Report`);
+  if (reportElement) {
+    reportElement.classList.add('active');
+    
+    switch(reportName) {
+      case 'statements':
+        // Don't auto-generate - let user choose between monthly/yearly
+        break;
+      case 'fines':
+        generateFinesReport();
+        break;
+      case 'redflags':
+        generateRedFlagReport();
+        break;
+      case 'transport':
+        generateTransportReport();
+        break;
+      case 'attendance':
+        generateAttendanceReport();
+        break;
+    }
+  }
+}
+
+function showReportsDashboard() {
+  document.querySelectorAll('.report-content').forEach(content => {
+    content.classList.remove('active');
+  });
+  document.getElementById('reportsDashboard').style.display = 'grid';
+}
+
+// Event listeners for report cards
+document.querySelectorAll('.report-card[data-report]').forEach(card => {
+  card.addEventListener('click', function() {
+    const reportName = this.getAttribute('data-report');
+    showReport(reportName);
+  });
+});
+
+// Event listeners for back buttons
+document.getElementById('backToReportsFromStatements').addEventListener('click', showReportsDashboard);
+document.getElementById('backToReportsFromFines').addEventListener('click', showReportsDashboard);
+document.getElementById('backToReportsFromRedflags').addEventListener('click', showReportsDashboard);
+document.getElementById('backToReportsFromTransport').addEventListener('click', showReportsDashboard);
+document.getElementById('backToReportsFromAttendance').addEventListener('click', showReportsDashboard);
+
+// Expandable sections functionality
+function initializeExpandableSections() {
+  document.querySelectorAll('.expandable-header').forEach(header => {
+    header.removeEventListener('click', handleExpandableClick);
+    header.addEventListener('click', handleExpandableClick);
+  });
+}
+
+function handleExpandableClick() {
+  const content = this.nextElementSibling;
+  const icon = this.querySelector('.expand-icon') || this.querySelector('.fa-chevron-down, .fa-chevron-up');
+  
+  content.classList.toggle('expanded');
+  this.classList.toggle('expanded');
+  
+  if (icon) {
+    if (icon.classList.contains('fa-chevron-down')) {
+      icon.classList.remove('fa-chevron-down');
+      icon.classList.add('fa-chevron-up');
+    } else {
+      icon.classList.remove('fa-chevron-up');
+      icon.classList.add('fa-chevron-down');
+    }
+  }
+}
+
+// Render Members - FIXED: Always sort by member number
 function renderMembers(filter=''){
   memberList.innerHTML = '';
-  const q = (filter||'').toLowerCase().trim();
+  const qRaw = (filter||'').trim();
+  const q = qRaw.toLowerCase();
 
-  members.forEach((m, index) => {
+  // Sort members by member number
+  const sortedMembers = [...members].sort((a, b) => {
+    const numA = parseInt(a.memberNumber) || 0;
+    const numB = parseInt(b.memberNumber) || 0;
+    return numA - numB;
+  });
+
+  sortedMembers.forEach((m, index) => {
     const name = (m.name||'').toLowerCase();
     const memNum = (m.memberNumber||'').toString();
-    const show = !q || name.includes(q) || memNum.includes(q);
+    const idxStr = String(index+1);
+    const show = qRaw === '' ? true : (name.includes(q) || (memNum && memNum.includes(qRaw)) || idxStr.includes(qRaw));
     if(!show) return;
 
     let beneficiariesHtml = '';
@@ -1982,49 +4520,78 @@ function renderMembers(filter=''){
 
     const row = document.createElement('tr');
     row.innerHTML = `
-      <td>${escHtml(m.memberNumber || 'N/A')}</td>
-      <td>${escHtml(m.name||'')}</td>
+      <td class="index-col">${escHtml(m.memberNumber || 'N/A')}</td>
+      <td><span class="member-name" style="color:var(--secondary);cursor:pointer">${escHtml(m.name||'')}</span></td>
       <td>${escHtml(m.idNumber||'')}</td>
       <td>${escHtml(m.phone||'')}</td>
       <td>${beneficiariesHtml}</td>
       <td>
-        <button class="beneficiary-btn" data-index="${index}"><i class="fas fa-user-plus"></i> Add Beneficiary</button>
-        <button class="edit-btn" data-index="${index}"><i class="fas fa-edit"></i> Edit</button>
-        <button class="delete-btn" data-index="${index}"><i class="fas fa-trash"></i> Delete</button>
+        <button class="beneficiary-btn" data-index="${members.indexOf(m)}"><i class="fas fa-user-plus"></i> Add Beneficiary</button>
+        <button class="edit-btn" data-index="${members.indexOf(m)}"><i class="fas fa-edit"></i> Edit</button>
+        <button class="delete-btn" data-index="${members.indexOf(m)}"><i class="fas fa-trash"></i> Delete</button>
       </td>
     `;
     memberList.appendChild(row);
   });
 
-  // Add event listeners
+  // Add event listeners for member actions
   document.querySelectorAll('.edit-btn').forEach(btn => {
-    btn.addEventListener('click', () => openEditChoiceModal(btn.getAttribute('data-index')));
+    btn.addEventListener('click', function() {
+      const index = this.getAttribute('data-index');
+      openEditChoiceModal(parseInt(index));
+    });
   });
   
   document.querySelectorAll('.delete-btn').forEach(btn => {
-    btn.addEventListener('click', () => openDeleteModal(btn.getAttribute('data-index')));
+    btn.addEventListener('click', function() {
+      const index = this.getAttribute('data-index');
+      openDeleteModal(parseInt(index));
+    });
   });
   
   document.querySelectorAll('.beneficiary-btn').forEach(btn => {
-    btn.addEventListener('click', () => openAddBeneficiaryModal(btn.getAttribute('data-index')));
+    btn.addEventListener('click', function() {
+      const index = this.getAttribute('data-index');
+      openAddBeneficiaryModal(parseInt(index));
+    });
   });
 }
 
 // Update payment member dropdown
 function updatePaymentMemberDropdown() {
   paymentMemberSelect.innerHTML = '<option value="">Select Member</option>';
-  members.forEach((member, index) => {
+  
+  // Sort members by member number
+  const sortedMembers = [...members].sort((a, b) => {
+    const numA = parseInt(a.memberNumber) || 0;
+    const numB = parseInt(b.memberNumber) || 0;
+    return numA - numB;
+  });
+  
+  sortedMembers.forEach((member, index) => {
     const option = document.createElement('option');
-    option.value = index;
+    option.value = members.indexOf(member);
     option.textContent = `${member.name} ${member.memberNumber ? `(${member.memberNumber})` : ''}`;
     paymentMemberSelect.appendChild(option);
   });
 }
 
-// Render Payments
-function renderPayments() {
+// Render Payments with search functionality
+function renderPayments(searchTerm = '') {
   paymentList.innerHTML = '';
-  payments.forEach((payment, index) => {
+  
+  let filteredPayments = payments;
+  
+  // Apply search filter if provided
+  if (searchTerm) {
+    const searchLower = searchTerm.toLowerCase();
+    filteredPayments = payments.filter(payment => {
+      const fullName = `${payment.name} ${payment.surname}`.toLowerCase();
+      return fullName.includes(searchLower);
+    });
+  }
+  
+  filteredPayments.forEach((payment, index) => {
     payment.totalPayment = calculateTotalPayment(payment);
     
     const member = members.find(m => 
@@ -2041,91 +4608,32 @@ function renderPayments() {
       <td>${escHtml(payment.surname || '')}</td>
       <td>${payment.date || ''}</td>
       <td>${payment.monthlyCollection ? formatCurrency(payment.monthlyCollection) : 'R0.00'}</td>
-      <td>${payment.dressCode || ''}</td>
+      <td>${payment.dressCode ? `${payment.dressCode} (${formatCurrency(payment.dressCode === 'Jacket' ? 750 : 500)})` : ''}</td>
       <td>${payment.fines || ''}</td>
       <td>${payment.transport ? formatCurrency(payment.transport) : 'R0.00'}</td>
       <td>${formatCurrency(payment.totalPayment)}</td>
       <td>
-        <button class="edit-btn" data-payment-index="${index}"><i class="fas fa-edit"></i> Edit</button>
-        <button class="delete-btn" data-payment-index="${index}"><i class="fas fa-trash"></i> Delete</button>
+        <button class="edit-btn" data-payment-index="${payments.indexOf(payment)}"><i class="fas fa-edit"></i> Edit</button>
+        <button class="delete-btn" data-payment-index="${payments.indexOf(payment)}"><i class="fas fa-trash"></i> Delete</button>
       </td>
     `;
     paymentList.appendChild(row);
   });
-
-  // Add event listeners for payment edit and delete buttons
-  document.querySelectorAll('#paymentList .edit-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const paymentIndex = parseInt(this.getAttribute('data-payment-index'));
-      editPayment(paymentIndex);
-    });
-  });
-
-  document.querySelectorAll('#paymentList .delete-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const paymentIndex = parseInt(this.getAttribute('data-payment-index'));
-      deletePayment(paymentIndex);
-    });
-  });
-}
-
-// Edit payment function
-function editPayment(paymentIndex) {
-  const payment = payments[paymentIndex];
   
-  // Find the member
-  const memberIndex = members.findIndex(m => 
-    m.name.split(' ')[0] === payment.name && 
-    m.name.split(' ').slice(1).join(' ') === payment.surname
-  );
-  
-  if (memberIndex !== -1) {
-    document.getElementById('paymentMember').value = memberIndex;
-  }
-  
-  document.getElementById('paymentDate').value = payment.date;
-  document.getElementById('monthlyCollection').value = payment.monthlyCollection || '';
-  document.getElementById('dressCode').value = payment.dressCode || '';
-  
-  // Extract fine type and amount
-  if (payment.fines) {
-    const fineParts = payment.fines.split('(');
-    if (fineParts.length > 1) {
-      const fineType = fineParts[0].trim();
-      const fineAmount = fineParts[1].replace('R', '').replace(')', '').replace(' - Paid', '').replace(' - Due', '').trim();
-      document.getElementById('fineType').value = fineType;
-      document.getElementById('fineAmount').value = fineAmount;
-    } else {
-      const fineType = payment.fines.replace(' - Paid', '').replace(' - Due', '').trim();
-      document.getElementById('fineType').value = fineType;
-      document.getElementById('fineAmount').value = '';
+  // Add event listeners for payment actions
+  document.querySelectorAll('[data-payment-index]').forEach(btn => {
+    if (btn.classList.contains('edit-btn')) {
+      btn.addEventListener('click', function() {
+        const index = this.getAttribute('data-payment-index');
+        openEditPaymentModal(parseInt(index));
+      });
+    } else if (btn.classList.contains('delete-btn')) {
+      btn.addEventListener('click', function() {
+        const index = this.getAttribute('data-payment-index');
+        openPaymentDeleteModal(parseInt(index));
+      });
     }
-  } else {
-    document.getElementById('fineType').value = '';
-    document.getElementById('fineAmount').value = '';
-  }
-  
-  document.getElementById('transport').value = payment.transport || '';
-  
-  // Remove the payment being edited
-  payments.splice(paymentIndex, 1);
-  
-  // Update the display
-  renderPayments();
-  updatePaymentSummary();
-  
-  showToast('Payment loaded for editing. Update the form and click "Add Payment" to save changes.');
-}
-
-// Delete payment function
-function deletePayment(paymentIndex) {
-  if (confirm('Are you sure you want to delete this payment record?')) {
-    payments.splice(paymentIndex, 1);
-    savePayments();
-    renderPayments();
-    updatePaymentSummary();
-    showToast('Payment record deleted successfully!');
-  }
+  });
 }
 
 // Update Payment Summary
@@ -2137,18 +4645,25 @@ function updatePaymentSummary() {
   
   payments.forEach(payment => {
     totalCollected += parseFloat(payment.totalPayment || 0);
-    monthlyCollections += parseFloat(payment.monthlyCollection || 0);
+    
+    if (typeof payment.monthlyCollection === 'number') {
+      monthlyCollections += payment.monthlyCollection;
+    }
+    
     finesCollected += extractAmountFromString(payment.fines);
-    transportMoney += parseFloat(payment.transport || 0);
+    
+    if (typeof payment.transport === 'number') {
+      transportMoney += payment.transport;
+    }
   });
   
-  document.getElementById("totalCollected").textContent = formatCurrency(totalCollected);
-  document.getElementById("monthlyCollections").textContent = formatCurrency(monthlyCollections);
-  document.getElementById("finesCollected").textContent = formatCurrency(finesCollected);
-  document.getElementById("transportMoney").textContent = formatCurrency(transportMoney);
+  document.getElementById('totalCollected').textContent = formatCurrency(totalCollected);
+  document.getElementById('monthlyCollections').textContent = formatCurrency(monthlyCollections);
+  document.getElementById('finesCollected').textContent = formatCurrency(finesCollected);
+  document.getElementById('transportMoney').textContent = formatCurrency(transportMoney);
 }
 
-// Form Submission - FIXED INPUT VALIDATION
+// Form Submission
 memberForm.addEventListener('submit', e => {
   e.preventDefault();
   const memberNumber = document.getElementById('memberNumber').value.trim();
@@ -2157,32 +4672,7 @@ memberForm.addEventListener('submit', e => {
   const phone = document.getElementById('phone').value.trim();
   
   if(!name || !idNumber || !phone){ 
-    showToast('Please fill in all required fields', 'error');
     return; 
-  }
-
-  // Check if member number is already taken
-  if (memberNumber) {
-    const isMemberNumberTaken = members.some(member => 
-      member.memberNumber === memberNumber && 
-      (editIndex < 0 || members[editIndex].memberNumber !== memberNumber)
-    );
-    
-    if (isMemberNumberTaken) {
-      showToast('This member number is already taken', 'error');
-      return;
-    }
-  }
-
-  // Check if ID number is already taken
-  const isIdNumberTaken = members.some(member => 
-    member.idNumber === idNumber && 
-    (editIndex < 0 || members[editIndex].idNumber !== idNumber)
-  );
-  
-  if (isIdNumberTaken) {
-    showToast('This ID number is already registered', 'error');
-    return;
   }
 
   const memberObj = { 
@@ -2199,647 +4689,44 @@ memberForm.addEventListener('submit', e => {
     memberSubmit.innerHTML = '<i class="fas fa-plus"></i> Add Member';
     memberSubmit.classList.remove('update-btn-blue');
     memberSubmit.classList.add('add-btn-green');
-    showToast('Member updated successfully!');
   } else {
     members.push(memberObj);
-    showToast('Member added successfully!');
   }
   
   saveMembers();
   renderMembers(searchInput.value.trim());
   updatePaymentMemberDropdown();
   memberForm.reset();
-});
-
-// Enhanced Payment Form Submission to handle fine status
-paymentForm.addEventListener('submit', e => {
-  e.preventDefault();
-  
-  const memberIndex = document.getElementById('paymentMember').value;
-  if (!memberIndex) {
-    showToast('Please select a member', 'error');
-    return;
-  }
-  
-  const member = members[memberIndex];
-  if (!member) return;
-  
-  const date = document.getElementById('paymentDate').value;
-  const monthlyCollection = parseFloat(document.getElementById('monthlyCollection').value) || 0;
-  const dressCode = document.getElementById('dressCode').value;
-  const fineType = document.getElementById('fineType').value;
-  const fineAmount = parseFloat(document.getElementById('fineAmount').value) || 0;
-  const transport = parseFloat(document.getElementById('transport').value) || 0;
-  
-  // Determine fine status based on whether amount is entered
-  let fineDisplay = '';
-  if (fineType && fineAmount > 0) {
-    fineDisplay = `${fineType} (${formatCurrency(fineAmount)}) - Paid`;
-  } else if (fineType) {
-    fineDisplay = `${fineType} - Due`;
-  }
-  
-  const paymentObj = {
-    bookNo: member.memberNumber || payments.length + 1,
-    name: member.name.split(' ')[0],
-    surname: member.name.split(' ').slice(1).join(' ') || '',
-    date,
-    monthlyCollection,
-    dressCode,
-    fines: fineDisplay,
-    transport
-  };
-  
-  paymentObj.totalPayment = calculateTotalPayment(paymentObj);
-  
-  payments.push(paymentObj);
-  savePayments();
-  renderPayments();
-  updatePaymentSummary();
-  paymentForm.reset();
-  document.getElementById('paymentDate').valueAsDate = new Date();
-  
-  showToast('Payment recorded successfully!');
+  showToast('Member saved successfully!');
 });
 
 // Search functionality
-searchInput.addEventListener('input', function() {
-  renderMembers(this.value.trim());
-});
-
-// Modal Functions
-function openEditChoiceModal(index) {
-  currentMemberIndex = parseInt(index);
-  document.getElementById('editChoiceModal').style.display = 'flex';
-}
-
-function closeEditChoiceModal() {
-  document.getElementById('editChoiceModal').style.display = 'none';
-  currentMemberIndex = null;
-}
-
-function editMember(index) {
-  const member = members[index];
-  document.getElementById('memberNumber').value = member.memberNumber || '';
-  document.getElementById('name').value = member.name || '';
-  document.getElementById('idNumber').value = member.idNumber || '';
-  document.getElementById('phone').value = member.phone || '';
-  
-  editIndex = index;
-  memberSubmit.innerHTML = '<i class="fas fa-save"></i> Update Member';
-  memberSubmit.classList.remove('add-btn-green');
-  memberSubmit.classList.add('update-btn-blue');
-  
-  closeEditChoiceModal();
-  document.getElementById('memberForm').scrollIntoView({ behavior: 'smooth' });
-}
-
-function openAddBeneficiaryModal(index) {
-  currentMemberIndex = parseInt(index);
-  const container = document.getElementById('addBenContainer');
-  container.innerHTML = `
-    <div class="ben-row" style="display: flex; gap: 0.5rem; margin-bottom: 0.8rem;">
-      <input class="ben-name" type="text" placeholder="Beneficiary name" style="flex: 2; padding: 8px; border-radius: 4px; border: 1px solid #ddd;" required>
-      <input class="ben-id" type="text" placeholder="Beneficiary ID" style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ddd;" required>
-      <select class="ben-rel" style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
-        <option value="Policy Holder">Policy Holder</option>
-        <option value="Spouse">Spouse</option>
-        <option value="Son">Son</option>
-        <option value="Daughter">Daughter</option>
-        <option value="Other">Other</option>
-      </select>
-    </div>
-  `;
-  document.getElementById('addBenModal').style.display = 'flex';
-}
-
-function closeAddBeneficiaryModal() {
-  document.getElementById('addBenModal').style.display = 'none';
-  currentMemberIndex = null;
-}
-
-function openEditBeneficiariesModal(index) {
-  currentMemberIndex = parseInt(index);
-  const member = members[currentMemberIndex];
-  const container = document.getElementById('modalBenContainer');
-  container.innerHTML = '';
-  
-  if (member.beneficiaries && member.beneficiaries.length > 0) {
-    member.beneficiaries.forEach((ben, benIndex) => {
-      addBeneficiaryRow(container, ben.name, ben.id, ben.relationship, benIndex);
-    });
-  } else {
-    addBeneficiaryRow(container);
-  }
-  
-  document.getElementById('editBenModal').style.display = 'flex';
-}
-
-function addBeneficiaryRow(container, name = '', id = '', relationship = 'Policy Holder', index = null) {
-  const row = document.createElement('div');
-  row.className = 'ben-row';
-  row.style.display = 'flex';
-  row.style.gap = '0.5rem';
-  row.style.marginBottom = '0.8rem';
-  row.style.alignItems = 'center';
-  
-  row.innerHTML = `
-    <input class="ben-name" type="text" placeholder="Beneficiary name" value="${name}" style="flex: 2; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
-    <input class="ben-id" type="text" placeholder="Beneficiary ID" value="${id}" style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
-    <select class="ben-rel" style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
-      <option value="Policy Holder" ${relationship === 'Policy Holder' ? 'selected' : ''}>Policy Holder</option>
-      <option value="Spouse" ${relationship === 'Spouse' ? 'selected' : ''}>Spouse</option>
-      <option value="Son" ${relationship === 'Son' ? 'selected' : ''}>Son</option>
-      <option value="Daughter" ${relationship === 'Daughter' ? 'selected' : ''}>Daughter</option>
-      <option value="Other" ${relationship === 'Other' ? 'selected' : ''}>Other</option>
-    </select>
-    <button type="button" class="btn btn-red remove-ben" style="padding: 8px 12px;">
-      <i class="fas fa-trash"></i>
-    </button>
-  `;
-  
-  container.appendChild(row);
-  
-  row.querySelector('.remove-ben').addEventListener('click', function() {
-    if (container.children.length > 1) {
-      row.remove();
-    } else {
-      row.querySelector('.ben-name').value = '';
-      row.querySelector('.ben-id').value = '';
-      row.querySelector('.ben-rel').value = 'Policy Holder';
-    }
-  });
-}
-
-function closeEditBeneficiariesModal() {
-  document.getElementById('editBenModal').style.display = 'none';
-  currentMemberIndex = null;
-}
-
-function openDeleteModal(index) {
-  deleteIndex = parseInt(index);
-  document.getElementById('deleteModal').style.display = 'flex';
-}
-
-function closeDeleteModal() {
-  document.getElementById('deleteModal').style.display = 'none';
-  deleteIndex = null;
-}
-
-// Event listeners for modals
-document.getElementById('choiceEditMember').addEventListener('click', function() {
-  if (currentMemberIndex !== null) {
-    editMember(currentMemberIndex);
-  }
-});
-
-document.getElementById('choiceEditBen').addEventListener('click', function() {
-  if (currentMemberIndex !== null) {
-    openEditBeneficiariesModal(currentMemberIndex);
-  }
-});
-
-document.getElementById('choiceCancel').addEventListener('click', closeEditChoiceModal);
-
-document.getElementById('addBenSave').addEventListener('click', function() {
-  if (currentMemberIndex === null) return;
-  
-  const benRow = document.querySelector('#addBenContainer .ben-row');
-  const name = benRow.querySelector('.ben-name').value.trim();
-  const id = benRow.querySelector('.ben-id').value.trim();
-  const relationship = benRow.querySelector('.ben-rel').value;
-  
-  if (!name || !id) {
-    showToast('Please fill in beneficiary name and ID', 'error');
-    return;
-  }
-  
-  const beneficiary = { name, id, relationship };
-  
-  if (!members[currentMemberIndex].beneficiaries) {
-    members[currentMemberIndex].beneficiaries = [];
-  }
-  
-  members[currentMemberIndex].beneficiaries.push(beneficiary);
-  saveMembers();
+searchInput.addEventListener('input', () => {
   renderMembers(searchInput.value.trim());
-  closeAddBeneficiaryModal();
-  showToast('Beneficiary added successfully!');
 });
 
-document.getElementById('addBenCancel').addEventListener('click', closeAddBeneficiaryModal);
-
-document.getElementById('modalAddRow').addEventListener('click', function() {
-  const container = document.getElementById('modalBenContainer');
-  addBeneficiaryRow(container);
+// Payment search functionality
+paymentSearch.addEventListener('input', () => {
+  renderPayments(paymentSearch.value.trim());
 });
 
-document.getElementById('modalSaveBen').addEventListener('click', function() {
-  if (currentMemberIndex === null) return;
-  
-  const container = document.getElementById('modalBenContainer');
-  const benRows = container.querySelectorAll('.ben-row');
-  const beneficiaries = [];
-  
-  let hasErrors = false;
-  
-  benRows.forEach(row => {
-    const name = row.querySelector('.ben-name').value.trim();
-    const id = row.querySelector('.ben-id').value.trim();
-    const relationship = row.querySelector('.ben-rel').value;
-    
-    if (name && id) {
-      beneficiaries.push({ name, id, relationship });
-    } else if (name || id) {
-      hasErrors = true;
-    }
+// NEW: Attendance search functionality
+attendanceSearch.addEventListener('input', () => {
+  loadAttendance(attendanceSearch.value.trim());
+});
+
+// Attendance event listeners
+if (attendanceDateInput) {
+  attendanceDateInput.addEventListener('change', function() {
+    // Save current selection for previous month/date before switching
+    try { saveAttendanceData(); } catch (e) { /* ignore save errors */ }
+    loadAttendance();
   });
-  
-  if (hasErrors) {
-    showToast('Please fill in both name and ID for all beneficiaries', 'error');
-    return;
-  }
-  
-  members[currentMemberIndex].beneficiaries = beneficiaries;
-  saveMembers();
-  renderMembers(searchInput.value.trim());
-  closeEditBeneficiariesModal();
-  showToast('Beneficiaries updated successfully!');
-});
-
-document.getElementById('modalCancelBen').addEventListener('click', closeEditBeneficiariesModal);
-
-document.getElementById('confirmDelete').addEventListener('click', function() {
-  if (deleteIndex !== null) {
-    members.splice(deleteIndex, 1);
-    saveMembers();
-    renderMembers(searchInput.value.trim());
-    updatePaymentMemberDropdown();
-    closeDeleteModal();
-    showToast('Member deleted successfully!');
-  }
-});
-
-document.getElementById('cancelDelete').addEventListener('click', closeDeleteModal);
-
-// PROFESSIONAL EXPORT TO EXCEL FUNCTION WITH ENHANCED STYLING
-function exportToExcel(data, filename, sheetName) {
-  try {
-    // Create workbook
-    const wb = XLSX.utils.book_new();
-    
-    // Prepare data for Excel
-    const wsData = [];
-    
-    // Add title row
-    const titleRow = [`${sheetName} Report - Generated on ${new Date().toLocaleDateString()}`];
-    wsData.push(titleRow);
-    
-    // Add empty row for spacing
-    wsData.push([]);
-    
-    // Add header row
-    if (data.length > 0) {
-      const headers = Object.keys(data[0]);
-      wsData.push(headers);
-    }
-    
-    // Add data rows
-    data.forEach(row => {
-      const rowData = [];
-      Object.keys(row).forEach(key => {
-        rowData.push(row[key]);
-      });
-      wsData.push(rowData);
-    });
-
-    // Create worksheet from data
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-    
-    // Apply professional styling
-    if (ws['!ref']) {
-      const range = XLSX.utils.decode_range(ws['!ref']);
-      
-      // Style title row (A1)
-      const titleCell = 'A1';
-      if (!ws[titleCell]) ws[titleCell] = { v: wsData[0][0] };
-      ws[titleCell].s = {
-        font: { 
-          color: { rgb: "FFFFFF" }, 
-          bold: true, 
-          sz: 16,
-          name: "Arial"
-        },
-        fill: { fgColor: { rgb: "2C3E50" } },
-        alignment: { 
-          horizontal: "center", 
-          vertical: "center" 
-        },
-        border: {
-          top: { style: "medium", color: { rgb: "1C2C3C" } },
-          left: { style: "medium", color: { rgb: "1C2C3C" } },
-          bottom: { style: "medium", color: { rgb: "1C2C3C" } },
-          right: { style: "medium", color: { rgb: "1C2C3C" } }
-        }
-      };
-      
-      // Merge title across all columns
-      if (data.length > 0) {
-        const numCols = Object.keys(data[0]).length;
-        ws['!merges'] = ws['!merges'] || [];
-        ws['!merges'].push({
-          s: { r: 0, c: 0 },
-          e: { r: 0, c: numCols - 1 }
-        });
-      }
-      
-      // Style header row (row 3)
-      for (let C = range.s.c; C <= range.e.c; ++C) {
-        const cellAddress = XLSX.utils.encode_cell({ r: 2, c: C });
-        if (!ws[cellAddress]) continue;
-        
-        ws[cellAddress].s = {
-          font: { 
-            color: { rgb: "FFFFFF" }, 
-            bold: true, 
-            sz: 12,
-            name: "Arial"
-          },
-          fill: { fgColor: { rgb: "3498DB" } },
-          alignment: { 
-            horizontal: "center", 
-            vertical: "center" 
-          },
-          border: {
-            top: { style: "medium", color: { rgb: "2980B9" } },
-            left: { style: "medium", color: { rgb: "2980B9" } },
-            bottom: { style: "medium", color: { rgb: "2980B9" } },
-            right: { style: "medium", color: { rgb: "2980B9" } }
-          }
-        };
-      }
-      
-      // Style data rows (starting from row 4)
-      for (let R = 3; R <= range.e.r; ++R) {
-        for (let C = range.s.c; C <= range.e.c; ++C) {
-          const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
-          if (!ws[cellAddress]) continue;
-          
-          // Check if this is a currency value
-          const header = wsData[2][C];
-          const isCurrency = header && (
-            header.toLowerCase().includes('amount') || 
-            header.toLowerCase().includes('payment') || 
-            header.toLowerCase().includes('collection') || 
-            header.toLowerCase().includes('total') ||
-            header.toLowerCase().includes('fee') ||
-            header.toLowerCase().includes('fine') ||
-            header.toLowerCase().includes('transport')
-          );
-          
-          ws[cellAddress].s = {
-            font: { 
-              sz: 11, 
-              name: "Arial",
-              color: isCurrency ? { rgb: "27AE60" } : { rgb: "2C3E50" }
-            },
-            alignment: { 
-              horizontal: "center", 
-              vertical: "center" 
-            },
-            border: {
-              top: { style: "thin", color: { rgb: "BDC3C7" } },
-              left: { style: "thin", color: { rgb: "BDC3C7" } },
-              bottom: { style: "thin", color: { rgb: "BDC3C7" } },
-              right: { style: "thin", color: { rgb: "BDC3C7" } }
-            },
-            numFmt: isCurrency ? '"R"#,##0.00' : undefined
-          };
-          
-          // Alternate row coloring for better readability
-          if (R % 2 === 0) {
-            ws[cellAddress].s.fill = { fgColor: { rgb: "F8F9FA" } };
-          } else {
-            ws[cellAddress].s.fill = { fgColor: { rgb: "FFFFFF" } };
-          }
-          
-          // Make currency values bold
-          if (isCurrency) {
-            ws[cellAddress].s.font.bold = true;
-          }
-        }
-      }
-      
-      // Auto-fit columns
-      ws['!cols'] = [];
-      for (let C = range.s.c; C <= range.e.c; ++C) {
-        let maxLength = 0;
-        for (let R = 0; R <= range.e.r; ++R) {
-          const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
-          if (ws[cellAddress] && ws[cellAddress].v) {
-            const cellLength = ws[cellAddress].v.toString().length;
-            if (cellLength > maxLength) maxLength = cellLength;
-          }
-        }
-        // Set column width with some padding
-        ws['!cols'].push({ wch: Math.min(Math.max(maxLength + 2, 12), 50) });
-      }
-      
-      // Set row heights for better appearance
-      ws['!rows'] = [
-        { hpt: 30 }, // Title row height
-        { hpt: 5 },  // Spacing row height
-        { hpt: 25 }, // Header row height
-      ];
-      for (let R = 3; R <= range.e.r; R++) {
-        ws['!rows'][R] = { hpt: 20 }; // Data rows height
-      }
-    }
-    
-    // Add worksheet to workbook
-    XLSX.utils.book_append_sheet(wb, ws, sheetName);
-    
-    // Generate and download file
-    const fileName = `${filename}_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
-    XLSX.writeFile(wb, fileName);
-    
-    showToast('Professional Excel report downloaded successfully! 🎉');
-    
-  } catch (error) {
-    console.error('Export error:', error);
-    showToast('Error exporting to Excel', 'error');
-  }
 }
+saveAttendanceBtn.addEventListener('click', saveAttendanceData);
 
-// Export Members to Excel with enhanced data
-exportExcelBtn.addEventListener('click', function() {
-  const exportData = members.map(member => ({
-    'Member Number': member.memberNumber || 'N/A',
-    'Full Name': member.name,
-    'ID Number': member.idNumber,
-    'Phone Number': member.phone,
-    'Beneficiaries Count': member.beneficiaries ? member.beneficiaries.length : 0,
-    'Primary Beneficiary': member.beneficiaries && member.beneficiaries.length > 0 ? 
-      `${member.beneficiaries[0].name} (${member.beneficiaries[0].relationship})` : 'None',
-    'All Beneficiaries': member.beneficiaries ? 
-      member.beneficiaries.map(b => `${b.name} - ${b.id} - ${b.relationship}`).join('; ') : 'None',
-    'Registration Date': new Date().toISOString().split('T')[0],
-    'Status': 'Active'
-  }));
-  
-  exportToExcel(exportData, 'Members_Master', 'Members');
-});
-
-// Export Payments to Excel with enhanced data
-exportPaymentsExcelBtn.addEventListener('click', function() {
-  const exportData = payments.map(payment => {
-    const member = members.find(m => 
-      m.name.split(' ')[0] === payment.name && 
-      m.name.split(' ').slice(1).join(' ') === payment.surname
-    );
-    
-    return {
-      'Receipt Number': payment.bookNo,
-      'Member Number': member ? member.memberNumber : 'N/A',
-      'Full Name': `${payment.name} ${payment.surname}`,
-      'Payment Date': payment.date,
-      'Monthly Collection': payment.monthlyCollection || 0,
-      'Dress Code Payment': payment.dressCode ? (payment.dressCode === 'Jacket' ? 750 : 500) : 0,
-      'Fine Amount': payment.fines ? extractAmountFromString(payment.fines) : 0,
-      'Fine Type': payment.fines ? payment.fines.split('(')[0].trim().replace(' - Paid', '').replace(' - Due', '') : 'None',
-      'Fine Status': payment.fines ? (payment.fines.includes('Paid') ? 'Paid' : 'Due') : 'None',
-      'Transport Fee': payment.transport || 0,
-      'Total Payment': payment.totalPayment || calculateTotalPayment(payment),
-      'Payment Method': 'Cash',
-      'Processed By': 'System Admin'
-    };
-  });
-  
-  exportToExcel(exportData, 'Payments_Summary', 'Payments');
-});
-
-// Navigation and Theme
-toggleBtn.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-  toggleBtn.innerHTML = document.body.classList.contains("dark") ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-});
-
-document.getElementById("logoContainer").addEventListener('click', () => {
-  document.getElementById("logo").classList.toggle('expanded');
-});
-
-navLinks.forEach(link => {
-  link.addEventListener("click", (e) => {
-    e.preventDefault();
-    const sectionId = link.getAttribute("data-section");
-    showSection(sectionId);
-  });
-});
-
-function showSection(sectionId) {
-  sections.forEach(sec => sec.classList.remove("active"));
-  homeHero.style.display = sectionId === "home" ? "block" : "none";
-  homeCards.style.display = sectionId === "home" ? "grid" : "none";
-  
-  if (sectionId && document.getElementById(sectionId)) {
-    document.getElementById(sectionId).classList.add("active");
-    
-    if (sectionId === "payments") {
-      updatePaymentMemberDropdown();
-      renderPayments();
-      updatePaymentSummary();
-    }
-    
-    if (sectionId === "members") {
-      renderMembers();
-    }
-  }
-}
-
-// Back buttons
-document.getElementById('backToHomeFromMembers').addEventListener('click', () => showSection('home'));
-document.getElementById('backToHomeFromPayments').addEventListener('click', () => showSection('home'));
-document.getElementById('backToHomeFromReports').addEventListener('click', () => showSection('home'));
-
-// Expandable section functionality
+// Initialize the system
 document.addEventListener('DOMContentLoaded', function() {
-  const expandableHeader = document.querySelector('.expandable-header');
-  const expandableContent = document.querySelector('.expandable-content');
-  const expandIcon = document.querySelector('.expand-icon');
-
-  if (expandableHeader && expandableContent) {
-    expandableHeader.addEventListener('click', function() {
-      const isExpanded = expandableContent.classList.contains('expanded');
-      
-      if (isExpanded) {
-        expandableContent.classList.remove('expanded');
-        expandableHeader.classList.remove('expanded');
-      } else {
-        expandableContent.classList.add('expanded');
-        expandableHeader.classList.add('expanded');
-      }
-    });
-  }
-
-  // Reports navigation
-  const reportCards = document.querySelectorAll('.report-card');
-  const reportContents = document.querySelectorAll('.report-content');
-  const reportsDashboard = document.getElementById('reportsDashboard');
-
-  reportCards.forEach(card => {
-    card.addEventListener('click', function() {
-      const reportType = this.getAttribute('data-report');
-      
-      // Hide all report contents and show the selected one
-      reportContents.forEach(content => {
-        content.classList.remove('active');
-      });
-      
-      reportsDashboard.style.display = 'none';
-      
-      const targetReport = document.getElementById(`${reportType}Report`);
-      if (targetReport) {
-        targetReport.classList.add('active');
-      }
-    });
-  });
-
-  // Back buttons for reports
-  document.getElementById('backToReportsFromStatements').addEventListener('click', function() {
-    showReportsDashboard();
-  });
-  
-  document.getElementById('backToReportsFromFines').addEventListener('click', function() {
-    showReportsDashboard();
-  });
-  
-  document.getElementById('backToReportsFromRedflags').addEventListener('click', function() {
-    showReportsDashboard();
-  });
-  
-  document.getElementById('backToReportsFromTransport').addEventListener('click', function() {
-    showReportsDashboard();
-  });
-
-  function showReportsDashboard() {
-    reportContents.forEach(content => {
-      content.classList.remove('active');
-    });
-    reportsDashboard.style.display = 'grid';
-  }
-
-  // Initialize fines management in reports
-  document.getElementById('generateFinesReport').addEventListener('click', function() {
-    generateFinesReport();
-  });
-
-  // Add transport payment button functionality
-  document.getElementById('transportPaymentBtn').addEventListener('click', function() {
-    document.getElementById('transport').value = '20';
-    showToast('R20 transport fee added to form');
-  });
-
-  // Rest of your existing initialization code...
   renderMembers('');
   updatePaymentMemberDropdown();
   renderPayments();
@@ -2848,127 +4735,792 @@ document.addEventListener('DOMContentLoaded', function() {
   // Set default date to today
   document.getElementById('paymentDate').valueAsDate = new Date();
   
+  // Initialize expandable sections
+  setTimeout(initializeExpandableSections, 500);
+  
+  // Initialize attendance
+  initializeAttendance();
+  
   showToast('System loaded successfully!');
 });
 
-// Generate Fines Report
+// Modal functions
+function openEditChoiceModal(index) {
+  currentMemberIndex = index;
+  document.getElementById('editChoiceModal').style.display = 'flex';
+}
+
+function openDeleteModal(index) {
+  deleteIndex = index;
+  document.getElementById('deleteModal').style.display = 'flex';
+}
+
+// FIXED: Add Beneficiary Modal
+function openAddBeneficiaryModal(index) {
+  currentMemberIndex = index;
+  
+  // Clear previous inputs
+  document.getElementById('beneficiaryName').value = '';
+  document.getElementById('beneficiaryId').value = '';
+  document.getElementById('beneficiaryRelationship').value = '';
+  
+  document.getElementById('addBenModal').style.display = 'flex';
+}
+
+// FIXED: Save Beneficiary
+document.getElementById('addBenSave').addEventListener('click', function() {
+  if (currentMemberIndex === null) return;
+  
+  const name = document.getElementById('beneficiaryName').value.trim();
+  const id = document.getElementById('beneficiaryId').value.trim();
+  const relationship = document.getElementById('beneficiaryRelationship').value.trim();
+  
+  if (!name || !id || !relationship) {
+    alert('Please fill in all beneficiary fields');
+    return;
+  }
+  
+  const beneficiary = {
+    name,
+    id,
+    relationship
+  };
+  
+  members[currentMemberIndex].beneficiaries.push(beneficiary);
+  saveMembers();
+  renderMembers(searchInput.value.trim());
+  document.getElementById('addBenModal').style.display = 'none';
+  currentMemberIndex = null;
+  
+  showToast('Beneficiary added successfully!');
+});
+
+// Edit Beneficiaries Modal
+function openEditBeneficiariesModal(index) {
+  currentMemberIndex = index;
+  const member = members[index];
+  
+  const modalBenContainer = document.getElementById('modalBenContainer');
+  modalBenContainer.innerHTML = '';
+  
+  // Add existing beneficiaries
+  member.beneficiaries.forEach((ben, i) => {
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.gap = '0.5rem';
+    row.innerHTML = `
+      <input type="text" value="${escHtml(ben.name)}" placeholder="Name" class="modal-input" data-index="${i}" data-field="name">
+      <input type="text" value="${escHtml(ben.id)}" placeholder="ID Number" class="modal-input" data-index="${i}" data-field="id">
+      <input type="text" value="${escHtml(ben.relationship)}" placeholder="Relationship" class="modal-input" data-index="${i}" data-field="relationship">
+      <button class="btn btn-red delete-beneficiary" data-index="${i}"><i class="fas fa-trash"></i></button>
+    `;
+    modalBenContainer.appendChild(row);
+  });
+  
+  document.getElementById('editBenModal').style.display = 'flex';
+}
+
+// Save Beneficiary Changes
+document.getElementById('modalSaveBen').addEventListener('click', function() {
+  if (currentMemberIndex === null) return;
+  
+  const member = members[currentMemberIndex];
+  const inputs = document.querySelectorAll('#modalBenContainer input');
+  
+  // Update beneficiaries
+  inputs.forEach(input => {
+    const index = parseInt(input.getAttribute('data-index'));
+    const field = input.getAttribute('data-field');
+    const value = input.value.trim();
+    
+    if (member.beneficiaries[index]) {
+      member.beneficiaries[index][field] = value;
+    }
+  });
+  
+  saveMembers();
+  renderMembers(searchInput.value.trim());
+  document.getElementById('editBenModal').style.display = 'none';
+  currentMemberIndex = null;
+  
+  showToast('Beneficiaries updated successfully!');
+});
+
+// Add new beneficiary row
+document.getElementById('modalAddRow').addEventListener('click', function() {
+  const member = members[currentMemberIndex];
+  const newIndex = member.beneficiaries.length;
+  
+  member.beneficiaries.push({
+    name: '',
+    id: '',
+    relationship: ''
+  });
+  
+  const row = document.createElement('div');
+  row.style.display = 'flex';
+  row.style.gap = '0.5rem';
+  row.innerHTML = `
+    <input type="text" placeholder="Name" class="modal-input" data-index="${newIndex}" data-field="name">
+    <input type="text" placeholder="ID Number" class="modal-input" data-index="${newIndex}" data-field="id">
+    <input type="text" placeholder="Relationship" class="modal-input" data-index="${newIndex}" data-field="relationship">
+    <button class="btn btn-red delete-beneficiary" data-index="${newIndex}"><i class="fas fa-trash"></i></button>
+  `;
+  document.getElementById('modalBenContainer').appendChild(row);
+});
+
+// Delete beneficiary
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('delete-beneficiary') || 
+      e.target.parentElement.classList.contains('delete-beneficiary')) {
+    const btn = e.target.classList.contains('delete-beneficiary') ? e.target : e.target.parentElement;
+    const index = parseInt(btn.getAttribute('data-index'));
+    
+    if (currentMemberIndex !== null) {
+      members[currentMemberIndex].beneficiaries.splice(index, 1);
+      openEditBeneficiariesModal(currentMemberIndex); // Refresh the modal
+    }
+  }
+});
+
+// Edit choice modal handlers
+document.getElementById('choiceEditMember').addEventListener('click', function() {
+  document.getElementById('editChoiceModal').style.display = 'none';
+  if (currentMemberIndex !== null) {
+    openEditMemberModal(currentMemberIndex);
+  }
+});
+
+document.getElementById('choiceEditBen').addEventListener('click', function() {
+  document.getElementById('editChoiceModal').style.display = 'none';
+  if (currentMemberIndex !== null) {
+    openEditBeneficiariesModal(currentMemberIndex);
+  }
+});
+
+document.getElementById('choiceCancel').addEventListener('click', function() {
+  document.getElementById('editChoiceModal').style.display = 'none';
+  currentMemberIndex = null;
+});
+
+// Close modals when clicking cancel buttons
+document.querySelectorAll('.btn-ghost').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.style.display = 'none';
+    });
+  });
+});
+
+// Cancel buttons for new modals
+document.getElementById('cancelPaymentEdit').addEventListener('click', function() {
+  document.getElementById('paymentEditModal').style.display = 'none';
+  editPaymentIndex = null;
+});
+
+document.getElementById('cancelPaymentDelete').addEventListener('click', function() {
+  document.getElementById('paymentDeleteModal').style.display = 'none';
+  deletePaymentIndex = null;
+});
+
+document.getElementById('cancelMemberEdit').addEventListener('click', function() {
+  document.getElementById('editMemberModal').style.display = 'none';
+  currentMemberIndex = null;
+});
+
+document.getElementById('addBenCancel').addEventListener('click', function() {
+  document.getElementById('addBenModal').style.display = 'none';
+  currentMemberIndex = null;
+});
+
+document.getElementById('modalCancelBen').addEventListener('click', function() {
+  document.getElementById('editBenModal').style.display = 'none';
+  currentMemberIndex = null;
+});
+
+// NEW: Generate Fines Report with due/paid status
 function generateFinesReport() {
   const finesContainer = document.getElementById('finesContainer');
   finesContainer.innerHTML = '';
-
-  // Group fines by member
-  const memberFines = {};
   
-  payments.forEach(payment => {
-    if (payment.fines) {
-      const memberKey = `${payment.name} ${payment.surname}`;
+  // Get all payments with fines
+  const finesPayments = payments.filter(payment => payment.fines && payment.fines.trim() !== '');
+  
+  // Separate due and paid fines
+  const dueFines = finesPayments.filter(payment => payment.fines.includes(' - Due'));
+  const paidFines = finesPayments.filter(payment => payment.fines.includes(' - Paid'));
+  
+  // Calculate statistics
+  const totalFines = paidFines.reduce((sum, payment) => sum + extractAmountFromString(payment.fines), 0);
+  const totalDue = dueFines.reduce((sum, payment) => {
+    // For due fines, we don't have amounts, so we'll estimate based on fine type
+    const fineType = payment.fines.split(' - ')[0];
+    let estimatedAmount = 0;
+    switch(fineType) {
+      case 'Late Coming': estimatedAmount = 30; break;
+      case 'Swearing': estimatedAmount = 50; break;
+      case 'Absence': estimatedAmount = 50; break;
+      case 'Misconduct': estimatedAmount = 100; break;
+      default: estimatedAmount = 50;
+    }
+    return sum + estimatedAmount;
+  }, 0);
+  
+  const finesSummary = document.createElement('div');
+  finesSummary.className = 'summary-cards';
+  finesSummary.innerHTML = `
+    <div class="summary-card">
+      <h3>Total Fines Collected</h3>
+      <div class="amount">${formatCurrency(totalFines)}</div>
+    </div>
+    <div class="summary-card">
+      <h3>Fines Due</h3>
+      <div class="amount" style="color: var(--accent);">${formatCurrency(totalDue)}</div>
+    </div>
+    <div class="summary-card">
+      <h3>Paid Fines</h3>
+      <div class="amount">${paidFines.length}</div>
+    </div>
+    <div class="summary-card">
+      <h3>Due Fines</h3>
+      <div class="amount" style="color: var(--accent);">${dueFines.length}</div>
+    </div>
+  `;
+  finesContainer.appendChild(finesSummary);
+  
+  // Create tabs for due and paid fines
+  const finesTabs = document.createElement('div');
+  finesTabs.className = 'transport-tabs';
+  finesTabs.innerHTML = `
+    <div class="transport-tab active" data-tab="due">Due Fines</div>
+    <div class="transport-tab" data-tab="paid">Paid Fines</div>
+  `;
+  finesContainer.appendChild(finesTabs);
+  
+  // Create tab content containers
+  const dueFinesContainer = document.createElement('div');
+  dueFinesContainer.className = 'transport-tab-content active';
+  dueFinesContainer.id = 'finesDueContainer';
+  
+  const paidFinesContainer = document.createElement('div');
+  paidFinesContainer.className = 'transport-tab-content';
+  paidFinesContainer.id = 'finesPaidContainer';
+  
+  finesContainer.appendChild(dueFinesContainer);
+  finesContainer.appendChild(paidFinesContainer);
+  
+  // Update due fines tab
+  updateFinesDueTab(dueFines);
+  
+  // Update paid fines tab
+  updateFinesPaidTab(paidFines);
+  
+  // Add tab functionality
+  finesTabs.querySelectorAll('.transport-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      const tabName = this.getAttribute('data-tab');
       
-      if (!memberFines[memberKey]) {
-        memberFines[memberKey] = {
-          name: memberKey,
-          fines: [],
-          totalDue: 0,
-          totalPaid: 0
-        };
-      }
+      // Update active tab
+      finesTabs.querySelectorAll('.transport-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
       
-      const fineAmount = extractAmountFromString(payment.fines);
-      const isPaid = payment.fines.includes('Paid');
-      
-      memberFines[memberKey].fines.push({
-        date: payment.date,
-        description: payment.fines,
-        amount: fineAmount,
-        status: isPaid ? 'Paid' : 'Due'
+      // Show active content
+      finesContainer.querySelectorAll('.transport-tab-content').forEach(content => {
+        content.classList.remove('active');
       });
-      
-      if (isPaid) {
-        memberFines[memberKey].totalPaid += fineAmount;
-      } else {
-        memberFines[memberKey].totalDue += fineAmount;
-      }
-    }
-  });
-
-  let hasFines = false;
-  
-  Object.values(memberFines).forEach(member => {
-    if (member.fines.length > 0) {
-      hasFines = true;
-      
-      const memberSection = document.createElement('div');
-      memberSection.className = 'expandable-section';
-      memberSection.innerHTML = `
-        <div class="expandable-header">
-          <h3><i class="fas fa-user"></i> ${escHtml(member.name)}</h3>
-          <span class="status-badge ${member.totalDue > 0 ? 'status-overdue' : 'status-paid'}">
-            ${member.totalDue > 0 ? 'Amount Due: ' + formatCurrency(member.totalDue) : 'All Paid'}
-          </span>
-          <i class="fas fa-chevron-down expand-icon"></i>
-        </div>
-        <div class="expandable-content">
-          <div class="expandable-content-inner">
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Fine Description</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${member.fines.map(fine => `
-                  <tr>
-                    <td>${fine.date}</td>
-                    <td>${fine.description.replace(' - Paid', '').replace(' - Due', '')}</td>
-                    <td>${formatCurrency(fine.amount)}</td>
-                    <td>
-                      <span class="payment-status status-${fine.status.toLowerCase()}">
-                        ${fine.status}
-                      </span>
-                    </td>
-                  </tr>
-                `).join('')}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td colspan="2"><strong>Total Summary</strong></td>
-                  <td><strong>Due: ${formatCurrency(member.totalDue)}</strong></td>
-                  <td><strong>Paid: ${formatCurrency(member.totalPaid)}</strong></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </div>
-      `;
-      
-      finesContainer.appendChild(memberSection);
-    }
-  });
-
-  if (!hasFines) {
-    finesContainer.innerHTML = '<p class="small-muted">No fines recorded in the system.</p>';
-  }
-
-  // Add expand functionality to the newly created sections
-  document.querySelectorAll('#finesContainer .expandable-header').forEach(header => {
-    header.addEventListener('click', function() {
-      const content = this.nextElementSibling;
-      const isExpanded = content.classList.contains('expanded');
-      
-      if (isExpanded) {
-        content.classList.remove('expanded');
-        this.classList.remove('expanded');
-      } else {
-        content.classList.add('expanded');
-        this.classList.add('expanded');
-      }
+      finesContainer.querySelector(`#fines${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Container`).classList.add('active');
     });
   });
-
-  showToast('Fines report generated successfully!');
 }
+
+// NEW: Update Fines Due Tab
+function updateFinesDueTab(dueFines) {
+  const finesDueContainer = document.getElementById('finesDueContainer');
+  finesDueContainer.innerHTML = '';
+  
+  if (dueFines.length === 0) {
+    finesDueContainer.innerHTML = `
+      <div style="text-align: center; padding: 3rem; background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow);">
+        <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--success); margin-bottom: 1rem;"></i>
+        <h3 style="color: var(--success); margin-bottom: 1rem;">No Due Fines</h3>
+        <p class="small-muted">All fines have been paid.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  const tableSection = document.createElement('div');
+  tableSection.innerHTML = `
+    <h3 style="margin: 2rem 0 1rem 0; color: var(--secondary);">
+      <i class="fas fa-list"></i> Due Fines
+    </h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Member</th>
+          <th>Date</th>
+          <th>Fine Type</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${dueFines.map(payment => `
+          <tr class="flagged-member">
+            <td>${payment.name} ${payment.surname}</td>
+            <td>${payment.date}</td>
+            <td>${payment.fines.split(' - ')[0]}</td>
+            <td>
+              <span class="payment-status status-overdue">Due</span>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+  finesDueContainer.appendChild(tableSection);
+}
+
+// NEW: Update Fines Paid Tab
+function updateFinesPaidTab(paidFines) {
+  const finesPaidContainer = document.getElementById('finesPaidContainer');
+  finesPaidContainer.innerHTML = '';
+  
+  if (paidFines.length === 0) {
+    finesPaidContainer.innerHTML = `
+      <div style="text-align: center; padding: 3rem; background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow);">
+        <i class="fas fa-info-circle" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem;"></i>
+        <h3 style="color: var(--warning); margin-bottom: 1rem;">No Paid Fines</h3>
+        <p class="small-muted">No fines have been paid yet.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  const tableSection = document.createElement('div');
+  tableSection.innerHTML = `
+    <h3 style="margin: 2rem 0 1rem 0; color: var(--secondary);">
+      <i class="fas fa-list"></i> Paid Fines
+    </h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Member</th>
+          <th>Date</th>
+          <th>Fine Type</th>
+          <th>Amount</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${paidFines.map(payment => `
+          <tr>
+            <td>${payment.name} ${payment.surname}</td>
+            <td>${payment.date}</td>
+            <td>${payment.fines.split(' (')[0]}</td>
+            <td>${formatCurrency(extractAmountFromString(payment.fines))}</td>
+            <td>
+              <span class="payment-status status-paid">Paid</span>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+  finesPaidContainer.appendChild(tableSection);
+}
+
+// NEW: Export to PDF functionality
+function exportToPDF(data, headers, filename, title) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  // Add title
+  doc.setFontSize(16);
+  doc.text(title, 14, 15);
+  doc.setFontSize(12);
+  doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 22);
+  
+  // Add table to PDF
+  doc.autoTable({
+    head: [headers],
+    body: data,
+    startY: 30,
+    styles: { fontSize: 8 },
+    headStyles: { fillColor: [52, 152, 219] }
+  });
+  
+  // Save the PDF
+  doc.save(`${filename}.pdf`);
+}
+
+// NEW: Export to Excel functionality
+function exportToExcel(data, headers, filename, title) {
+  // Create worksheet
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
+  
+  // Create workbook and append worksheet
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+  
+  // Write file
+  XLSX.writeFile(wb, `${filename}.xlsx`);
+}
+
+// NEW: Export Members Data
+function exportMembersData(format) {
+  const headers = ['Member Number', 'Full Name', 'ID Number', 'Phone', 'Beneficiaries Count'];
+  
+  const data = members.map(member => [
+    member.memberNumber || 'N/A',
+    member.name,
+    member.idNumber,
+    member.phone,
+    member.beneficiaries ? member.beneficiaries.length : 0
+  ]);
+  
+  if (format === 'pdf') {
+    exportToPDF(data, headers, 'members', 'Tshilapfene Burial Society - Members Report');
+    showToast('Members exported to PDF successfully!');
+  } else {
+    exportToExcel(data, headers, 'members', 'Tshilapfene Burial Society - Members Report');
+    showToast('Members exported to Excel successfully!');
+  }
+}
+
+// NEW: Export Payments Data
+function exportPaymentsData(format) {
+  const headers = ['Book No', 'Name', 'Surname', 'Date', 'Monthly Collections', 'Dress Code', 'Fines', 'Transport', 'Total Payment'];
+  
+  const data = payments.map(payment => [
+    payment.bookNo || '',
+    payment.name,
+    payment.surname,
+    payment.date,
+    formatCurrency(payment.monthlyCollection),
+    payment.dressCode,
+    payment.fines,
+    formatCurrency(payment.transport),
+    formatCurrency(payment.totalPayment)
+  ]);
+  
+  if (format === 'pdf') {
+    exportToPDF(data, headers, 'payments', 'Tshilapfene Burial Society - Payments Report');
+    showToast('Payments exported to PDF successfully!');
+  } else {
+    exportToExcel(data, headers, 'payments', 'Tshilapfene Burial Society - Payments Report');
+    showToast('Payments exported to Excel successfully!');
+  }
+}
+
+// NEW: Export Reports Data
+function exportReportsData(format) {
+  const headers = ['Report Type', 'Generated Date', 'Summary Data'];
+  
+  const data = [
+    ['Members Count', new Date().toLocaleDateString(), members.length],
+    ['Payments Count', new Date().toLocaleDateString(), payments.length],
+    ['Total Collections', new Date().toLocaleDateString(), formatCurrency(payments.reduce((sum, p) => sum + (p.totalPayment || 0), 0))],
+    ['Red Flagged Members', new Date().toLocaleDateString(), checkRedFlagMembers().length]
+  ];
+  
+  if (format === 'pdf') {
+    exportToPDF(data, headers, 'reports_summary', 'Tshilapfene Burial Society - Reports Summary');
+    showToast('Reports exported to PDF successfully!');
+  } else {
+    exportToExcel(data, headers, 'reports_summary', 'Tshilapfene Burial Society - Reports Summary');
+    showToast('Reports exported to Excel successfully!');
+  }
+}
+
+// NEW: Export Statements Data
+function exportStatementsData(format) {
+  const headers = ['Month', 'Total Collections', 'Fines Collected', 'Transport Fees', 'Member Count'];
+  
+  // Group by month
+  const monthlyData = {};
+  payments.forEach(payment => {
+    const date = new Date(payment.date);
+    const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+    
+    if (!monthlyData[monthYear]) {
+      monthlyData[monthYear] = {
+        month: date.toLocaleString('default', { month: 'long', year: 'numeric' }),
+        total: 0,
+        fines: 0,
+        transport: 0,
+        count: 0
+      };
+    }
+    
+    monthlyData[monthYear].total += parseFloat(payment.monthlyCollection || 0);
+    monthlyData[monthYear].fines += extractAmountFromString(payment.fines);
+    monthlyData[monthYear].transport += parseFloat(payment.transport || 0);
+    monthlyData[monthYear].count++;
+  });
+  
+  const data = Object.values(monthlyData).map(month => [
+    month.month,
+    formatCurrency(month.total),
+    formatCurrency(month.fines),
+    formatCurrency(month.transport),
+    month.count
+  ]);
+  
+  if (format === 'pdf') {
+    exportToPDF(data, headers, 'statements', 'Tshilapfene Burial Society - Statements Report');
+    showToast('Statements exported to PDF successfully!');
+  } else {
+    exportToExcel(data, headers, 'statements', 'Tshilapfene Burial Society - Statements Report');
+    showToast('Statements exported to Excel successfully!');
+  }
+}
+
+// NEW: Export Fines Data
+function exportFinesData(format) {
+  const headers = ['Member', 'Date', 'Fine Type', 'Amount', 'Status'];
+  
+  const finesPayments = payments.filter(payment => payment.fines && payment.fines.trim() !== '');
+  
+  const data = finesPayments.map(payment => {
+    const isDue = payment.fines.includes(' - Due');
+    const amount = isDue ? 'Due' : formatCurrency(extractAmountFromString(payment.fines));
+    const fineType = payment.fines.split(' - ')[0].split(' (')[0];
+    
+    return [
+      `${payment.name} ${payment.surname}`,
+      payment.date,
+      fineType,
+      amount,
+      isDue ? 'Due' : 'Paid'
+    ];
+  });
+  
+  if (format === 'pdf') {
+    exportToPDF(data, headers, 'fines', 'Tshilapfene Burial Society - Fines Report');
+    showToast('Fines exported to PDF successfully!');
+  } else {
+    exportToExcel(data, headers, 'fines', 'Tshilapfene Burial Society - Fines Report');
+    showToast('Fines exported to Excel successfully!');
+  }
+}
+
+// NEW: Export Red Flags Data
+function exportRedFlagsData(format) {
+  const headers = ['Member Number', 'Full Name', 'ID Number', 'Phone', 'Last Payment', 'Status'];
+  
+  const redFlagMembers = checkRedFlagMembers();
+  
+  const data = redFlagMembers.map(member => [
+    member.memberNumber,
+    member.name,
+    member.idNumber,
+    member.phone,
+    member.lastPayment ? member.lastPayment.toLocaleDateString() : 'Never',
+    'Overdue'
+  ]);
+  
+  if (format === 'pdf') {
+    exportToPDF(data, headers, 'red_flags', 'Tshilapfene Burial Society - Red Flagged Members Report');
+    showToast('Red flags exported to PDF successfully!');
+  } else {
+    exportToExcel(data, headers, 'red_flags', 'Tshilapfene Burial Society - Red Flagged Members Report');
+    showToast('Red flags exported to Excel successfully!');
+  }
+}
+
+// NEW: Export Transport Data
+function exportTransportData(format) {
+  const headers = ['Member', 'Date', 'Transport Fee', 'Funeral For', 'Status'];
+  
+  const transportPayments = payments.filter(payment => parseFloat(payment.transport || 0) > 0);
+  
+  const data = transportPayments.map(payment => [
+    `${payment.name} ${payment.surname}`,
+    payment.date,
+    formatCurrency(payment.transport),
+    payment.funeralFor || 'Not specified',
+    payment.isDue ? 'Unpaid' : 'Paid'
+  ]);
+  
+  if (format === 'pdf') {
+    exportToPDF(data, headers, 'transport', 'Tshilapfene Burial Society - Transport Payments Report');
+    showToast('Transport data exported to PDF successfully!');
+  } else {
+    exportToExcel(data, headers, 'transport', 'Tshilapfene Burial Society - Transport Payments Report');
+    showToast('Transport data exported to Excel successfully!');
+  }
+}
+
+// NEW: Export Attendance Data
+function exportAttendanceData(format) {
+  const headers = ['Month', 'Members Present', 'Total Membership', 'Attendance Rate'];
+  
+  const data = Object.keys(attendance).map(key => {
+    const [year, month] = key.split('-');
+    const monthName = new Date(year, month - 1).toLocaleString('default', { month: 'long', year: 'numeric' });
+    const present = attendance[key].length;
+    const total = members.length;
+    const rate = total > 0 ? ((present / total) * 100).toFixed(1) : 0;
+    
+    return [monthName, present, total, `${rate}%`];
+  });
+  
+  const title = 'Attendance - Members';
+  if (format === 'pdf') {
+    exportToPDF(data, headers, 'attendance', `Tshilapfene Burial Society - ${title}`);
+    showToast('Attendance exported to PDF successfully!');
+  } else {
+    exportToExcel(data, headers, 'attendance', `Tshilapfene Burial Society - ${title}`);
+    showToast('Attendance exported to Excel successfully!');
+  }
+}
+
+// Set up all export buttons
+document.getElementById('exportPDF').addEventListener('click', () => exportMembersData('pdf'));
+document.getElementById('exportExcel').addEventListener('click', () => exportMembersData('excel'));
+
+document.getElementById('exportPaymentsPDF').addEventListener('click', () => exportPaymentsData('pdf'));
+document.getElementById('exportPaymentsExcel').addEventListener('click', () => exportPaymentsData('excel'));
+
+document.getElementById('exportReportsPDF').addEventListener('click', () => exportReportsData('pdf'));
+document.getElementById('exportReportsExcel').addEventListener('click', () => exportReportsData('excel'));
+
+document.getElementById('exportStatementsPDF').addEventListener('click', () => exportStatementsData('pdf'));
+document.getElementById('exportStatementsExcel').addEventListener('click', () => exportStatementsData('excel'));
+
+document.getElementById('exportFinesPDF').addEventListener('click', () => exportFinesData('pdf'));
+document.getElementById('exportFinesExcel').addEventListener('click', () => exportFinesData('excel'));
+
+document.getElementById('exportRedflagsPDF').addEventListener('click', () => exportRedFlagsData('pdf'));
+document.getElementById('exportRedflagsExcel').addEventListener('click', () => exportRedFlagsData('excel'));
+
+document.getElementById('exportTransportPDF').addEventListener('click', () => exportTransportData('pdf'));
+document.getElementById('exportTransportExcel').addEventListener('click', () => exportTransportData('excel'));
+
+document.getElementById('exportAttendancePDF').addEventListener('click', () => exportAttendanceData('pdf'));
+document.getElementById('exportAttendanceExcel').addEventListener('click', () => exportAttendanceData('excel'));
+
+document.getElementById('exportAttendanceReportPDF').addEventListener('click', () => exportAttendanceData('pdf'));
+document.getElementById('exportAttendanceReportExcel').addEventListener('click', () => exportAttendanceData('excel'));
+
+// NEW: Export functionality for the new pages
+document.getElementById('exportMonthlyPDF').addEventListener('click', () => exportMonthlyData('pdf'));
+document.getElementById('exportMonthlyExcel').addEventListener('click', () => exportMonthlyData('excel'));
+
+document.getElementById('exportYearlyPDF').addEventListener('click', () => exportYearlyData('pdf'));
+document.getElementById('exportYearlyExcel').addEventListener('click', () => exportYearlyData('excel'));
+
+// Export functions for the new pages
+function exportMonthlyData(format) {
+  const headers = ['Month', 'Total Collections', 'Fines Collected', 'Transport Fees', 'Member Count'];
+  
+  // Group by month
+  const monthlyData = {};
+  payments.forEach(payment => {
+    const date = new Date(payment.date);
+    const monthYear = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+    
+    if (!monthlyData[monthYear]) {
+      monthlyData[monthYear] = {
+        month: date.toLocaleString('default', { month: 'long', year: 'numeric' }),
+        total: 0,
+        fines: 0,
+        transport: 0,
+        count: 0
+      };
+    }
+    
+    monthlyData[monthYear].total += parseFloat(payment.monthlyCollection || 0);
+    monthlyData[monthYear].fines += extractAmountFromString(payment.fines);
+    monthlyData[monthYear].transport += parseFloat(payment.transport || 0);
+    monthlyData[monthYear].count++;
+  });
+  
+  const data = Object.values(monthlyData).map(month => [
+    month.month,
+    formatCurrency(month.total),
+    formatCurrency(month.fines),
+    formatCurrency(month.transport),
+    month.count
+  ]);
+  
+  if (format === 'pdf') {
+    exportToPDF(data, headers, 'monthly_collections', 'Tshilapfene Burial Society - Monthly Collections Report');
+    showToast('Monthly collections exported to PDF successfully!');
+  } else {
+    exportToExcel(data, headers, 'monthly_collections', 'Tshilapfene Burial Society - Monthly Collections Report');
+    showToast('Monthly collections exported to Excel successfully!');
+  }
+}
+
+function exportYearlyData(format) {
+  const headers = ['Year', 'Total Collections', 'Fines Collected', 'Transport Fees', 'Member Count'];
+  
+  // Group by year
+  const yearlyData = {};
+  payments.forEach(payment => {
+    const date = new Date(payment.date);
+    const year = date.getFullYear().toString();
+    
+    if (!yearlyData[year]) {
+      yearlyData[year] = {
+        year: year,
+        total: 0,
+        fines: 0,
+        transport: 0,
+        count: 0
+      };
+    }
+    
+    yearlyData[year].total += parseFloat(payment.monthlyCollection || 0);
+    yearlyData[year].fines += extractAmountFromString(payment.fines);
+    yearlyData[year].transport += parseFloat(payment.transport || 0);
+    yearlyData[year].count++;
+  });
+  
+  const data = Object.values(yearlyData).map(year => [
+    year.year,
+    formatCurrency(year.total),
+    formatCurrency(year.fines),
+    formatCurrency(year.transport),
+    year.count
+  ]);
+  
+  if (format === 'pdf') {
+    exportToPDF(data, headers, 'yearly_view', 'Tshilapfene Burial Society - Yearly View Report');
+    showToast('Yearly view exported to PDF successfully!');
+  } else {
+    exportToExcel(data, headers, 'yearly_view', 'Tshilapfene Burial Society - Yearly View Report');
+    showToast('Yearly view exported to Excel successfully!');
+  }
+}
+
+// NEW: Generate Attendance Report Button
+document.getElementById('generateAttendanceReport').addEventListener('click', function() {
+  generateAttendanceReport();
+  showToast('Attendance report generated!');
+});
+
+// Add CSS for modal inputs
+const style = document.createElement('style');
+style.textContent = `
+  .modal-input {
+    padding: 0.8rem 1rem;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background: var(--card-bg);
+    color: var(--text);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+  
+  .modal-input:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  }
+`;
+document.head.appendChild(style);
 </script>
 </body>
 </html>
