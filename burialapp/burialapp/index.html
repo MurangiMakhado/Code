@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TSHILAPFENE BURIAL SOCIETY Management | Home</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<link rel="stylesheet" href="assets/css/custom.css" />
+</head>
+
+<body class="dark">
+<div class="app-container">
+  
+  <nav>
+    <div class="logo-container" id="logoContainer">
+      <img src="/assets/images/logo.jpeg" alt="TSHILAPFENE BURIAL SOCIETY Logo" class="logo" id="logo">
+    </div>
+    <ul>
+      <li><a href="#" data-section="home"><i class="fas fa-home"></i> Home</a></li>
+      <li><a href="/members.html"><i class="fas fa-users"></i> Members</a></li>
+      <li><a href="#" data-section="attendance"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+      <li><a href="#" data-section="payments"><i class="fas fa-money-bill-wave"></i> Payments</a></li>
+      <li><a href="#" data-section="reports"><i class="fas fa-chart-bar"></i> Reports</a></li>
+    </ul>
+    
+    <!-- Auth Section -->
+    <div class="nav-right">
+      <div class="user-info">
+        <i class="fas fa-user-circle"></i>
+        <span id="userName">Loading...</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </nav>
+
+  <section class="hero" id="homeSection">
+    <div class="hero-content">
+      <h2>Dignified Support in Times of Need</h2>
+      <p>Comprehensive management for members, payments, and beneficiaries</p>
+      <div class="user-greeting" style="margin-top: 1rem; font-size: 1.1rem; color: rgba(255,255,255,0.9);">
+        <i class="fas fa-user"></i> Welcome, <span id="userGreeting">User</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="container" id="homeCards">
+    <div class="card" onclick="window.location.href='members.html'">
+      <div class="card-icon"><i class="fas fa-user-friends"></i></div>
+      <h3>Member Management</h3>
+      <p>Register members, upload IDs, and manage profiles with our intuitive system.</p>
+    </div>
+    <div class="card" data-section="payments">
+      <div class="card-icon"><i class="fas fa-credit-card"></i></div>
+      <h3>Payment Tracking</h3>
+      <p>Track fees, contributions, and allocate payments with detailed reporting.</p>
+    </div>
+    <div class="card" data-section="attendance">
+      <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
+      <h3>Attendance Tracking</h3>
+      <p>Record and monitor member attendance for meetings and events.</p>
+    </div>
+    <div class="card" data-section="reports">
+      <div class="card-icon"><i class="fas fa-chart-pie"></i></div>
+      <h3>Reporting</h3>
+      <p>Generate detailed financial and membership reports with visual analytics.</p>
+    </div>
+  </div>
+
+
+  <div class="content" id="payments">
+    <button class="back-button" id="backToHomeFromPayments">
+      <i class="fas fa-arrow-left"></i> Back to Home
+    </button>
+    <div class="section-header">
+      <h2><i class="fas fa-money-bill-wave"></i> Payment Management</h2>
+      <div class="export-buttons">
+        <button class="export-btn" id="exportPaymentsPDF">
+          <i class="fas fa-file-pdf"></i> Export PDF
+        </button>
+        <button class="export-btn" id="exportPaymentsExcel">
+          <i class="fas fa-file-excel"></i> Export Excel
+        </button>
+      </div>
+    </div>
+    <p class="small-muted">Record and track member payments, fines, and other contributions.</p>
+    
+    <div class="payment-search-container">
+      <input type="text" id="paymentSearch" placeholder="Search payments by member name...">
+    </div>
+    
+    <div class="summary-cards">
+      <div class="summary-card" id="monthlyCollectionsCard">
+        <h3>Monthly Collections</h3>
+        <div class="amount" id="monthlyCollections">R0.00</div>
+      </div>
+      <div class="summary-card" id="finesCollectedCard">
+        <h3>Fines Collected</h3>
+        <div class="amount" id="finesCollected">R0.00</div>
+      </div>
+      <div class="summary-card" id="transportMoneyCard">
+        <h3>Transport Money</h3>
+        <div class="amount" id="transportMoney">R0.00</div>
+      </div>
+      <div class="summary-card total" id="totalCollectedCard">
+        <h3>Total Collected</h3>
+        <div class="amount" id="totalCollected">R0.00</div>
+      </div>
+    </div>
+    
+    <div class="expandable-section" id="paymentDetailsSection">
+      <div class="expandable-header">
+        <h3><i class="fas fa-receipt"></i> Payment Details</h3>
+        <i class="fas fa-chevron-down expand-icon"></i>
+      </div>
+      <div class="expandable-content">
+        <div class="expandable-content-inner">
+          <form id="paymentForm">
+            <select id="paymentMember" required>
+              <option value="">Select Member</option>
+            </select>
+            <input type="date" id="paymentDate" required>
+            <input type="number" id="monthlyCollection" placeholder="Monthly Collection" step="0.01">
+            <select id="dressCode">
+              <option value="">Select Dress Code</option>
+              <option value="Jacket">Jacket</option>
+              <option value="Shirt">Shirt</option>
+              <option value="Other">Other</option>
+            </select>
+            <select id="fineType">
+              <option value="">Select Fine Type</option>
+              <option value="Late Coming">Late Coming</option>
+              <option value="Swearing">Swearing</option>
+              <option value="Absence">Absence</option>
+              <option value="Misconduct">Misconduct</option>
+              <option value="Other">Other</option>
+            </select>
+            <input type="number" id="fineAmount" placeholder="Fine Amount (leave empty for due)" step="0.01">
+            <div class="custom-select">
+              <select id="transport">
+                <option value="">Select Transport Payment</option>
+                <option value="20">R20 Transport Fee</option>
+              </select>
+            </div>
+            <input type="text" id="funeralFor" placeholder="Funeral For (Name of deceased)" style="display: none;">
+            <button type="button" id="transportPaymentBtn" class="btn btn-primary">
+              <i class="fas fa-bus"></i> Add Transport Payment
+            </button>
+            <button type="submit" class="btn btn-green">
+              <i class="fas fa-plus"></i> Add Payment
+            </button>
+          </form>
+          
+          <table>
+            <thead>
+              <tr>
+                <th>Book No</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Date</th>
+                <th>Monthly Collections</th>
+                <th>Dress Code</th>
+                <th>Fines</th>
+                <th>Transport</th>
+                <th>Total Payment</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="paymentList"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content" id="attendance">
+    <button class="back-button" id="backToHomeFromAttendance">
+      <i class="fas fa-arrow-left"></i> Back to Home
+    </button>
+    <div class="section-header">
+      <h2><i class="fas fa-calendar-check"></i> Attendance Tracking</h2>
+      <div class="export-buttons">
+        <button class="export-btn" id="exportAttendancePDF">
+          <i class="fas fa-file-pdf"></i> Export PDF
+        </button>
+        <button class="export-btn" id="exportAttendanceExcel">
+          <i class="fas fa-file-excel"></i> Export Excel
+        </button>
+      </div>
+    </div>
+    <p class="small-muted">Record and track member attendance for meetings and events.</p>
+    
+    <div class="attendance-search-container">
+      <input type="text" id="attendanceSearch" placeholder="Search members by name or member number...">
+    </div>
+    
+    <div class="attendance-controls">
+      <div class="attendance-month-selector">
+        <div class="date-picker-wrapper">
+          <label for="attendanceDate" class="small-muted">Date (optional)</label>
+          <input type="date" id="attendanceDate" />
+        </div>
+
+        <button class="btn btn-primary" id="saveAttendance">
+          <i class="fas fa-save"></i> Save Attendance
+        </button>
+      </div>
+    </div>
+    
+    <div class="attendance-stats">
+      <div class="attendance-stat present">
+        <h4>Present Today</h4>
+        <div class="value" id="presentCount">0</div>
+      </div>
+      <div class="attendance-stat absent">
+        <h4>Absent Today</h4>
+        <div class="value" id="absentCount">0</div>
+      </div>
+      <div class="attendance-stat rate">
+        <h4>Attendance Rate</h4>
+        <div class="value attendance-rate-value" id="attendanceRate">0%</div>
+      </div>
+      <div class="attendance-stat">
+        <h4>Total Members</h4>
+        <div class="value" id="totalMembersCount">0</div>
+      </div>
+    </div>
+    
+    <div class="attendance-list" id="attendanceList"></div>
+  </div>
+
+  <div class="content" id="reports">
+    <button class="back-button" id="backToHomeFromReports">
+      <i class="fas fa-arrow-left"></i> Back to Home
+    </button>
+    <div class="section-header">
+      <h2><i class="fas fa-chart-bar"></i> Reports</h2>
+      <div class="export-buttons">
+        <button class="export-btn" id="exportReportsPDF">
+          <i class="fas fa-file-pdf"></i> Export PDF
+        </button>
+        <button class="export-btn" id="exportReportsExcel">
+          <i class="fas fa-file-excel"></i> Export Excel
+        </button>
+      </div>
+    </div>
+    <p class="small-muted">Generate summaries of income, expenses, and membership statistics.</p>
+    
+    <div class="reports-grid" id="reportsDashboard">
+      <div class="report-card" data-report="statements">
+        <div class="report-icon">
+          <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+        <h3>Members Collect</h3>
+        <p>View detailed payment statements and collection reports for all members with comprehensive breakdowns.</p>
+        <div class="report-card-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+      
+      <div class="report-card warning" data-report="fines">
+        <div class="report-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3>Fines Management</h3>
+        <p>Manage and track fines for member violations and late payments with detailed statements.</p>
+        <div class="report-card-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+      
+      <div class="report-card" data-report="redflags">
+        <div class="report-icon">
+          <i class="fas fa-flag"></i>
+        </div>
+        <h3>Red Flagged Membership</h3>
+        <p>Identify members who haven't made monthly payments in over 6 months and require immediate attention.</p>
+        <div class="report-card-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+      
+      <div class="report-card danger" data-report="transport">
+        <div class="report-icon">
+          <i class="fas fa-bus"></i>
+        </div>
+        <h3>Transport Collection Due</h3>
+        <p>Manage and track funeral transport collections with automated payment tracking.</p>
+        <div class="report-card-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+      
+      <div class="report-card success" data-report="attendance">
+        <div class="report-icon">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <h3>Attendance Records</h3>
+        <p>View and analyze member attendance patterns and generate attendance reports.</p>
+        <div class="report-card-arrow">
+          <i class="fas fa-arrow-right"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-content" id="statementsReport">
+      <button class="back-button" id="backToReportsFromStatements">
+        <i class="fas fa-arrow-left"></i> Back to Reports
+      </button>
+      <div class="report-header">
+        <h2><i class="fas fa-file-invoice-dollar"></i> Members Collect</h2>
+        <div class="export-buttons">
+          <button class="export-btn" id="exportStatementsPDF">
+            <i class="fas fa-file-pdf"></i> Export PDF
+          </button>
+          <button class="export-btn" id="exportStatementsExcel">
+            <i class="fas fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="members-collect-cards">
+        <div class="collect-card" id="monthlyCollectionsView">
+          <div class="collect-icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <h3>Monthly Collections</h3>
+          <p>View detailed monthly payment collections with breakdown by member and payment type.</p>
+        </div>
+        
+        <div class="collect-card success" id="yearlyView">
+          <div class="collect-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h3>Yearly View</h3>
+          <p>Analyze yearly payment trends and performance with comprehensive visual reports.</p>
+        </div>
+      </div>
+
+      <div id="statementsContainer"></div>
+    </div>
+
+    <div class="report-content" id="monthlyCollectionsPage">
+      <button class="back-button" id="backToStatementsFromMonthly">
+        <i class="fas fa-arrow-left"></i> Back to Members Collect
+      </button>
+      <div class="report-header">
+        <h2><i class="fas fa-calendar-alt"></i> Monthly Collections</h2>
+        <div class="export-buttons">
+          <button class="export-btn" id="exportMonthlyPDF">
+            <i class="fas fa-file-pdf"></i> Export PDF
+          </button>
+          <button class="export-btn" id="exportMonthlyExcel">
+            <i class="fas fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+      </div>
+
+      <div id="monthlyCollectionsContainer"></div>
+    </div>
+
+    <div class="report-content" id="yearlyViewPage">
+      <button class="back-button" id="backToStatementsFromYearly">
+        <i class="fas fa-arrow-left"></i> Back to Members Collect
+      </button>
+      <div class="report-header">
+        <h2><i class="fas fa-chart-line"></i> Yearly View</h2>
+        <div class="export-buttons">
+          <button class="export-btn" id="exportYearlyPDF">
+            <i class="fas fa-file-pdf"></i> Export PDF
+          </button>
+          <button class="export-btn" id="exportYearlyExcel">
+            <i class="fas fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+      </div>
+
+      <div id="yearlyViewContainer"></div>
+    </div>
+
+    <div class="report-content" id="finesReport">
+      <button class="back-button" id="backToReportsFromFines">
+        <i class="fas fa-arrow-left"></i> Back to Reports
+      </button>
+      <div class="report-header">
+        <h2><i class="fas fa-exclamation-triangle"></i> Fines Management</h2>
+        <div class="export-buttons">
+          <button class="export-btn" id="exportFinesPDF">
+            <i class="fas fa-file-pdf"></i> Export PDF
+          </button>
+          <button class="export-btn" id="exportFinesExcel">
+            <i class="fas fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="report-actions">
+        <button class="quick-action-btn warning" id="generateFinesReport">
+          <i class="fas fa-sync"></i> Generate Fines Report
+        </button>
+      </div>
+
+      <div id="finesContainer"></div>
+    </div>
+
+    <div class="report-content" id="redflagsReport">
+      <button class="back-button" id="backToReportsFromRedflags">
+        <i class="fas fa-arrow-left"></i> Back to Reports
+      </button>
+      <div class="report-header">
+        <h2><i class="fas fa-flag"></i> Red Flagged Membership</h2>
+        <div class="export-buttons">
+          <button class="export-btn" id="exportRedflagsPDF">
+            <i class="fas fa-file-pdf"></i> Export PDF
+          </button>
+          <button class="export-btn" id="exportRedflagsExcel">
+            <i class="fas fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="report-actions">
+        <button class="quick-action-btn warning" id="generateRedFlagReport">
+          <i class="fas fa-flag"></i> Generate Red Flag Report
+        </button>
+      </div>
+
+      <div id="redFlagContainer"></div>
+    </div>
+
+    <div class="report-content" id="transportReport">
+      <button class="back-button" id="backToReportsFromTransport">
+        <i class="fas fa-arrow-left"></i> Back to Reports
+      </button>
+      <div class="report-header">
+        <h2><i class="fas fa-bus"></i> Transport Collection Due</h2>
+        <div class="export-buttons">
+          <button class="export-btn" id="exportTransportPDF">
+            <i class="fas fa-file-pdf"></i> Export PDF
+          </button>
+          <button class="export-btn" id="exportTransportExcel">
+            <i class="fas fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="report-actions">
+        <button class="quick-action-btn success" id="chargeTransportFee">
+          <i class="fas fa-plus-circle"></i> Charge R20 Transport Fee to All
+        </button>
+        <button class="quick-action-btn warning" id="generateTransportReport">
+          <i class="fas fa-sync"></i> Refresh Transport Report
+        </button>
+        <button class="quick-action-btn primary" id="transportBreakdown">
+          <i class="fas fa-chart-pie"></i> Transport Breakdown
+        </button>
+      </div>
+
+      <div class="transport-tabs">
+        <div class="transport-tab active" data-tab="due">Due Payments</div>
+        <div class="transport-tab" data-tab="paid">Paid Payments</div>
+      </div>
+
+      <div class="transport-tab-content active" id="transportDueTab">
+        <div id="transportDueContainer"></div>
+      </div>
+
+      <div class="transport-tab-content" id="transportPaidTab">
+        <div id="transportPaidContainer"></div>
+      </div>
+      
+      <div id="transportBreakdownContainer"></div>
+    </div>
+
+    <div class="report-content" id="attendanceReport">
+      <button class="back-button" id="backToReportsFromAttendance">
+        <i class="fas fa-arrow-left"></i> Back to Reports
+      </button>
+      <div class="report-header">
+        <h2><i class="fas fa-calendar-check"></i> Attendance Records</h2>
+        <div class="export-buttons">
+          <button class="export-btn" id="exportAttendanceReportPDF">
+            <i class="fas fa-file-pdf"></i> Export PDF
+          </button>
+          <button class="export-btn" id="exportAttendanceReportExcel">
+            <i class="fas fa-file-excel"></i> Export Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="report-actions">
+        <button class="quick-action-btn primary" id="generateAttendanceReport">
+          <i class="fas fa-sync"></i> Generate Attendance Report
+        </button>
+      </div>
+
+      <div id="attendanceReportContainer"></div>
+    </div>
+    
+  </div>
+
+  <!-- Modals -->
+
+  <div id="paymentEditModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-edit"></i> Edit Payment</h3>
+      <form id="editPaymentForm" style="display:flex;flex-direction:column;gap:1rem;margin-top:1.5rem;">
+        <input type="date" id="editPaymentDate" required class="modal-input">
+        <input type="number" id="editMonthlyCollection" placeholder="Monthly Collection" step="0.01" class="modal-input">
+        <select id="editDressCode" class="modal-input">
+          <option value="">Select Dress Code</option>
+          <option value="Jacket">Jacket</option>
+          <option value="Shirt">Shirt</option>
+          <option value="Other">Other</option>
+        </select>
+        <select id="editFineType" class="modal-input">
+          <option value="">Select Fine Type</option>
+          <option value="Late Coming">Late Coming</option>
+          <option value="Swearing">Swearing</option>
+          <option value="Absence">Absence</option>
+          <option value="Misconduct">Misconduct</option>
+          <option value="Other">Other</option>
+        </select>
+        <input type="number" id="editFineAmount" placeholder="Fine Amount (leave empty for due)" step="0.01" class="modal-input">
+        <div class="custom-select">
+          <select id="editTransport" class="modal-input">
+            <option value="">Select Transport Payment</option>
+            <option value="20">R20 Transport Fee</option>
+          </select>
+        </div>
+        <input type="text" id="editFuneralFor" placeholder="Funeral For (Name of deceased)" style="display: none;" class="modal-input">
+      </form>
+      <div class="modal-buttons">
+        <button id="savePaymentEdit" class="btn btn-green"><i class="fas fa-save"></i> Save Changes</button>
+        <button id="cancelPaymentEdit" class="btn btn-ghost"><i class="fas fa-times"></i> Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="paymentDeleteModal" class="modal">
+    <div class="modal-content">
+      <h3><i class="fas fa-exclamation-circle"></i> Confirm Payment Deletion</h3>
+      <p>Are you sure you want to delete this payment? This action cannot be undone.</p>
+      <div class="modal-buttons">
+        <button id="confirmPaymentDelete" class="btn btn-red"><i class="fas fa-check"></i> Yes, Delete</button>
+        <button id="cancelPaymentDelete" class="btn btn-ghost"><i class="fas fa-times"></i> Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Impowered By Lifhasi Technologies.</p>
+  </footer>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="auth.js"></script>
+<script>
+    // Auth and Main Application Script
+    const API_BASE_URL = 'http://127.0.0.1:8000/api';
+    
+    // Check authentication on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if user is logged in
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        // Update user info
+        updateUserInfo();
+        
+        // Initialize navigation
+        initNavigation();
+        
+        // Initialize sections
+        initHomeCards();
+        initPaymentsSection();
+        initAttendanceSection();
+        initReportsSection();
+        
+        // Show welcome toast
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        if (userData.name || userData.email) {
+            showToast(`Welcome back, ${userData.name || userData.email}!`, 'success');
+        }
+    });
+    
+    function updateUserInfo() {
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        const userNameElement = document.getElementById('userName');
+        const userGreetingElement = document.getElementById('userGreeting');
+        
+        if (userData) {
+            if (userNameElement) {
+                userNameElement.textContent = userData.name || userData.email || 'User';
+            }
+            if (userGreetingElement) {
+                userGreetingElement.textContent = userData.name || userData.email || 'User';
+            }
+        }
+    }
+    
+    function logout() {
+        if (confirm('Are you sure you want to logout?')) {
+            // Clear localStorage
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userData');
+            
+            // Show logout message
+            showToast('Logged out successfully', 'success');
+            
+            // Redirect to login page
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1000);
+        }
+    }
+    
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        if (!toast) return;
+        
+        toast.textContent = message;
+        toast.className = 'toast';
+        toast.classList.add(type);
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+    
+    function getAuthHeaders() {
+        const token = localStorage.getItem('authToken');
+        return {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        };
+    }
+    
+    async function apiRequest(endpoint, method = 'GET', data = null) {
+        const headers = getAuthHeaders();
+        
+        const options = {
+            method: method,
+            headers: headers,
+        };
+        
+        if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+            options.body = JSON.stringify(data);
+        }
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/${endpoint}`, options);
+            
+            // Handle 401 Unauthorized
+            if (response.status === 401) {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userData');
+                window.location.href = 'login.html';
+                return null;
+            }
+            
+            const responseData = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(responseData.message || `API Error: ${response.status}`);
+            }
+            
+            return responseData;
+        } catch (error) {
+            console.error('API Request Error:', error);
+            showToast(error.message || 'Network error', 'error');
+            throw error;
+        }
+    }
+    
+    // Navigation functions
+    function initNavigation() {
+        // Home navigation
+        document.querySelectorAll('[data-section]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const section = this.getAttribute('data-section');
+                showSection(section);
+            });
+        });
+        
+        // Back buttons
+        document.querySelectorAll('.back-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const target = this.id.replace('backToHomeFrom', '').toLowerCase();
+                if (target === 'payments' || target === 'attendance' || target === 'reports') {
+                    showSection('home');
+                } else if (target.includes('reports')) {
+                    showSection('reports');
+                } else if (target.includes('statements')) {
+                    showSection('statements');
+                }
+            });
+        });
+    }
+    
+    function showSection(sectionId) {
+        // Hide all content sections
+        document.querySelectorAll('.content, .report-content').forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        // Hide home cards if not home
+        if (sectionId !== 'home') {
+            document.getElementById('homeCards').style.display = 'none';
+            document.getElementById('homeSection').style.display = 'none';
+        } else {
+            document.getElementById('homeCards').style.display = 'grid';
+            document.getElementById('homeSection').style.display = 'block';
+        }
+        
+        // Show selected section
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.classList.add('active');
+        }
+    }
+    
+    function initHomeCards() {
+        document.querySelectorAll('#homeCards .card').forEach(card => {
+            card.addEventListener('click', function() {
+                const section = this.getAttribute('data-section');
+                showSection(section);
+            });
+        });
+    }
+    
+    function initPaymentsSection() {
+        // Payment form submission
+        const paymentForm = document.getElementById('paymentForm');
+        if (paymentForm) {
+            paymentForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const paymentData = {
+                    member_id: document.getElementById('paymentMember').value,
+                    date: document.getElementById('paymentDate').value,
+                    monthly_collection: document.getElementById('monthlyCollection').value || 0,
+                    dress_code: document.getElementById('dressCode').value,
+                    fine_type: document.getElementById('fineType').value,
+                    fine_amount: document.getElementById('fineAmount').value || 0,
+                    transport: document.getElementById('transport').value || 0,
+                    funeral_for: document.getElementById('funeralFor').value || ''
+                };
+                
+                try {
+                    const result = await apiRequest('payments', 'POST', paymentData);
+                    showToast('Payment added successfully', 'success');
+                    paymentForm.reset();
+                    loadPayments();
+                } catch (error) {
+                    showToast('Error adding payment: ' + error.message, 'error');
+                }
+            });
+        }
+        
+        // Expandable section
+        const expandableHeader = document.querySelector('.expandable-header');
+        if (expandableHeader) {
+            expandableHeader.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('.expand-icon');
+                
+                if (content.classList.contains('expanded')) {
+                    content.classList.remove('expanded');
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    content.classList.add('expanded');
+                    icon.style.transform = 'rotate(180deg)';
+                }
+            });
+        }
+        
+        // Initial load
+        loadPayments();
+        loadPaymentMembers();
+    }
+    
+    async function loadPaymentMembers() {
+        try {
+            const members = await apiRequest('members');
+            const paymentMemberSelect = document.getElementById('paymentMember');
+            
+            if (members && members.length > 0) {
+                paymentMemberSelect.innerHTML = '<option value="">Select Member</option>' + 
+                    members.map(member => 
+                        `<option value="${member.id}">${member.name} (${member.member_number || 'No ID'})</option>`
+                    ).join('');
+            }
+        } catch (error) {
+            console.error('Error loading members for payments:', error);
+        }
+    }
+    
+    async function loadPayments() {
+        try {
+            const payments = await apiRequest('payments');
+            const paymentList = document.getElementById('paymentList');
+            
+            if (payments && payments.length > 0) {
+                // Calculate totals
+                let monthlyCollections = 0;
+                let finesCollected = 0;
+                let transportMoney = 0;
+                let totalCollected = 0;
+                
+                payments.forEach(payment => {
+                    monthlyCollections += parseFloat(payment.monthly_collection) || 0;
+                    finesCollected += parseFloat(payment.fine_amount) || 0;
+                    transportMoney += parseFloat(payment.transport) || 0;
+                    totalCollected += (parseFloat(payment.monthly_collection) || 0) + 
+                                     (parseFloat(payment.fine_amount) || 0) + 
+                                     (parseFloat(payment.transport) || 0);
+                });
+                
+                // Update summary cards
+                document.getElementById('monthlyCollections').textContent = 'R' + monthlyCollections.toFixed(2);
+                document.getElementById('finesCollected').textContent = 'R' + finesCollected.toFixed(2);
+                document.getElementById('transportMoney').textContent = 'R' + transportMoney.toFixed(2);
+                document.getElementById('totalCollected').textContent = 'R' + totalCollected.toFixed(2);
+                
+                // Display payments
+                paymentList.innerHTML = payments.map(payment => `
+                    <tr>
+                        <td>${payment.book_number || 'N/A'}</td>
+                        <td>${payment.member?.name || 'N/A'}</td>
+                        <td>${payment.member?.surname || ''}</td>
+                        <td>${new Date(payment.date).toLocaleDateString()}</td>
+                        <td>R${(parseFloat(payment.monthly_collection) || 0).toFixed(2)}</td>
+                        <td>${payment.dress_code || 'N/A'}</td>
+                        <td>${payment.fine_type ? payment.fine_type + ' R' + (parseFloat(payment.fine_amount) || 0).toFixed(2) : 'N/A'}</td>
+                        <td>R${(parseFloat(payment.transport) || 0).toFixed(2)}</td>
+                        <td>R${((parseFloat(payment.monthly_collection) || 0) + 
+                               (parseFloat(payment.fine_amount) || 0) + 
+                               (parseFloat(payment.transport) || 0)).toFixed(2)}</td>
+                        <td>
+                            <button class="edit-btn" onclick="editPayment(${payment.id})">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="delete-btn" onclick="deletePayment(${payment.id})">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                paymentList.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 2rem;">No payments found</td></tr>';
+            }
+        } catch (error) {
+            console.error('Error loading payments:', error);
+            showToast('Error loading payments', 'error');
+        }
+    }
+    
+    function initAttendanceSection() {
+        const saveAttendanceBtn = document.getElementById('saveAttendance');
+        if (saveAttendanceBtn) {
+            saveAttendanceBtn.addEventListener('click', async function() {
+                const attendanceDate = document.getElementById('attendanceDate').value;
+                const checkedMembers = document.querySelectorAll('#attendanceList input[type="checkbox"]:checked');
+                
+                if (checkedMembers.length === 0) {
+                    showToast('Please select at least one member', 'warning');
+                    return;
+                }
+                
+                const attendanceData = {
+                    date: attendanceDate || new Date().toISOString().split('T')[0],
+                    present_members: Array.from(checkedMembers).map(cb => parseInt(cb.value))
+                };
+                
+                try {
+                    const result = await apiRequest('attendance', 'POST', attendanceData);
+                    showToast('Attendance saved successfully', 'success');
+                    loadAttendanceStats();
+                } catch (error) {
+                    showToast('Error saving attendance: ' + error.message, 'error');
+                }
+            });
+        }
+        
+        // Initial load
+        loadAttendance();
+        loadAttendanceStats();
+    }
+    
+    async function loadAttendance() {
+        try {
+            const members = await apiRequest('members');
+            const attendanceList = document.getElementById('attendanceList');
+            
+            if (members && members.length > 0) {
+                attendanceList.innerHTML = members.map(member => `
+                    <div class="attendance-member">
+                        <input type="checkbox" id="member-${member.id}" value="${member.id}">
+                        <label for="member-${member.id}">${member.name} (${member.member_number || 'No ID'})</label>
+                    </div>
+                `).join('');
+                
+                // Update total members count
+                document.getElementById('totalMembersCount').textContent = members.length;
+            } else {
+                attendanceList.innerHTML = '<div style="text-align: center; padding: 2rem;">No members found</div>';
+            }
+        } catch (error) {
+            console.error('Error loading attendance:', error);
+        }
+    }
+    
+    async function loadAttendanceStats() {
+        try {
+            const stats = await apiRequest('attendance/stats');
+            if (stats) {
+                document.getElementById('presentCount').textContent = stats.present || 0;
+                document.getElementById('absentCount').textContent = stats.absent || 0;
+                document.getElementById('attendanceRate').textContent = stats.rate ? stats.rate + '%' : '0%';
+            }
+        } catch (error) {
+            console.error('Error loading attendance stats:', error);
+        }
+    }
+    
+    function initReportsSection() {
+        // Report card clicks
+        document.querySelectorAll('.report-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const report = this.getAttribute('data-report');
+                showReport(report);
+            });
+        });
+        
+        // Transport tabs
+        document.querySelectorAll('.transport-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-tab');
+                showTransportTab(tabId);
+            });
+        });
+    }
+    
+    function showReport(reportId) {
+        // Hide all report contents
+        document.querySelectorAll('.report-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        
+        // Show selected report
+        const report = document.getElementById(reportId + 'Report');
+        if (report) {
+            report.classList.add('active');
+        }
+    }
+    
+    function showTransportTab(tabId) {
+        // Update active tab
+        document.querySelectorAll('.transport-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelector(`.transport-tab[data-tab="${tabId}"]`).classList.add('active');
+        
+        // Show corresponding content
+        document.querySelectorAll('.transport-tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById('transport' + tabId.charAt(0).toUpperCase() + tabId.slice(1) + 'Tab').classList.add('active');
+    }
+
+    // Payment functions
+    async function editPayment(paymentId) {
+        try {
+            const payment = await apiRequest(`payments/${paymentId}`); 
+            if (payment) {
+                document.getElementById('editPaymentDate').value = payment.date;
+                document.getElementById('editMonthlyCollection').value = payment.monthly_collection || '';
+                document.getElementById('editDressCode').value = payment.dress_code || '';
+                document.getElementById('editFineType').value = payment.fine_type || '';
+                document.getElementById('editFineAmount').value = payment.fine_amount || '';
+                document.getElementById('editTransport').value = payment.transport || '';
+                
+                // Show modal
+                document.getElementById('paymentEditModal').style.display = 'flex';
+                
+                // Save handler
+                document.getElementById('savePaymentEdit').onclick = async function() {
+                    const updatedData = {
+                        date: document.getElementById('editPaymentDate').value,
+                        monthly_collection: document.getElementById('editMonthlyCollection').value || 0,
+                        dress_code: document.getElementById('editDressCode').value,
+                        fine_type: document.getElementById('editFineType').value,
+                        fine_amount: document.getElementById('editFineAmount').value || 0,
+                        transport: document.getElementById('editTransport').value || 0
+                    };
+                    
+                    try {
+                        const result = await apiRequest(`payments/${paymentId}`, 'PUT', updatedData);
+                        showToast('Payment updated successfully', 'success');
+                        document.getElementById('paymentEditModal').style.display = 'none';
+                        loadPayments();
+                    } catch (error) {
+                        showToast('Error updating payment: ' + error.message, 'error');
+                    }
+                };
+                
+                // Cancel handler
+                document.getElementById('cancelPaymentEdit').onclick = function() {
+                    document.getElementById('paymentEditModal').style.display = 'none';
+                };
+            }
+        } catch (error) {
+            showToast('Error loading payment: ' + error.message, 'error');
+        }
+    }
+    
+    async function deletePayment(paymentId) {
+        if (!confirm('Are you sure you want to delete this payment?')) return;
+        
+        try {
+            const result = await apiRequest(`payments/${paymentId}`, 'DELETE');
+            showToast('Payment deleted successfully', 'success');
+            loadPayments();
+        } catch (error) {
+            showToast('Error deleting payment: ' + error.message, 'error');
+        }
+    }
+</script>
+</body>
+</html>

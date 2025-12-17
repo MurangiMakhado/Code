@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Management | Burial Society</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="assets/css/attendance.css">
+</head>
+<body>
+    <div class="app-container">
+        <nav>
+            <div class="logo-container" onclick="window.location.href='index.html'">
+                <img src="logo.png" alt="Logo" class="logo">
+            </div>
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="members.html"><i class="fas fa-users"></i> Members</a></li>
+                <li><a href="payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                <li><a href="attendance.html" class="active"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+                <li><a href="reports.html"><i class="fas fa-chart-bar"></i> Reports</a></li>
+            </ul>
+            <div class="nav-right">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="currentUser">Admin</span>
+                </div>
+                <button class="btn-logout" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </nav>
+
+        <div class="content active" id="attendance">
+            <div class="section-header">
+                <h2><i class="fas fa-calendar-check"></i> Attendance Management</h2>
+                <div class="export-buttons">
+                    <button class="export-btn" onclick="exportAttendance()">
+                        <i class="fas fa-file-export"></i> Export
+                    </button>
+                    <button class="export-btn" onclick="showAttendanceStats()">
+                        <i class="fas fa-chart-pie"></i> Statistics
+                    </button>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <button class="quick-action-btn success" onclick="markAllPresent()">
+                    <i class="fas fa-check-circle"></i> Mark All Present
+                </button>
+                <button class="quick-action-btn" onclick="clearAllAttendance()">
+                    <i class="fas fa-times-circle"></i> Clear All
+                </button>
+                <button class="quick-action-btn warning" onclick="quickFilterActive()">
+                    <i class="fas fa-filter"></i> Active Members Only
+                </button>
+                <button class="quick-action-btn" onclick="loadPreviousAttendance()">
+                    <i class="fas fa-history"></i> Load Previous
+                </button>
+            </div>
+
+            <div class="attendance-controls">
+                <div class="attendance-month-selector">
+                    <div class="date-picker-wrapper">
+                        <label for="attendanceDate"><i class="fas fa-calendar-day"></i> Attendance Date:</label>
+                        <input type="date" id="attendanceDate" value="2025-12-17">
+                    </div>
+                    
+                    <div class="month-year-group">
+                        <select id="attendanceMonth" onchange="filterAttendanceByMonth()">
+                            <option value="">All Months</option>
+                            <option value="01">January</option>
+                            <option value="02">February</option>
+                            <option value="03">March</option>
+                            <option value="04">April</option>
+                            <option value="05">May</option>
+                            <option value="06">June</option>
+                            <option value="07">July</option>
+                            <option value="08">August</option>
+                            <option value="09">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        
+                        <select id="attendanceYear" onchange="filterAttendanceByYear()">
+                            <option value="">All Years</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                        </select>
+                    </div>
+                    
+                    <button class="quick-action-btn success" onclick="saveAttendance()" id="saveAttendance">
+                        <i class="fas fa-save"></i> Save Attendance
+                    </button>
+                </div>
+            </div>
+
+            <div class="attendance-search-container">
+                <input type="text" id="attendanceSearch" placeholder="Search members by name or ID..." 
+                       onkeyup="searchAttendanceMembers()">
+            </div>
+
+            <div class="attendance-stats" id="attendanceStats">
+                <!-- Stats will be dynamically loaded here -->
+            </div>
+
+            <div class="attendance-list" id="attendanceList">
+                <!-- Members list will be dynamically loaded here -->
+            </div>
+
+            <div class="expandable-section">
+                <div class="expandable-header" onclick="toggleSection('attendanceHistory')">
+                    <h3><i class="fas fa-history"></i> Attendance History</h3>
+                    <i class="fas fa-chevron-down expand-icon"></i>
+                </div>
+                <div class="expandable-content" id="attendanceHistory">
+                    <div class="expandable-content-inner">
+                        <div id="attendanceHistoryContent">
+                            <!-- Attendance history will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Burial Society Management System &copy; 2024 | All rights reserved</p>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Attendance Stats Modal -->
+    <div id="statsModal" class="modal">
+        <div class="modal-content">
+            <h2><i class="fas fa-chart-pie"></i> Attendance Statistics</h2>
+            <div id="statsModalContent">
+                <!-- Stats will be loaded here -->
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-ghost" onclick="closeStatsModal()">Close</button>
+                <button class="btn btn-primary" onclick="printStats()">
+                    <i class="fas fa-print"></i> Print
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Previous Attendance Modal -->
+    <div id="previousAttendanceModal" class="modal">
+        <div class="modal-content">
+            <h2><i class="fas fa-history"></i> Load Previous Attendance</h2>
+            <div id="previousAttendanceList">
+                <!-- Previous attendance dates will be loaded here -->
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-ghost" onclick="closePreviousAttendanceModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/services/apiService.js"></script>
+    <script src="assets/js/services/memberService.js"></script>
+    <script src="assets/js/utils/storage.js"></script>
+    <script src="assets/js/attendance.js"></script>
+</body>
+</html>
